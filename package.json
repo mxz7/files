@@ -16,7 +16,7 @@
     "@sveltejs/adapter-vercel": "^5.4.4",
     "@sveltejs/kit": "^2.20.6",
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
-    "@types/node": "^22.5.5",
+    "@types/node": "^22.14.1",
     "autoprefixer": "^10.4.20",
     "daisyui": "^4.12.23",
     "dotenv": "^16.4.7",
