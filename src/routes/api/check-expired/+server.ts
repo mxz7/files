@@ -6,11 +6,6 @@ import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { error, json } from "@sveltejs/kit";
 import { eq, lte } from "drizzle-orm";
 
-export const config = {
-  runtime: "nodejs20.x",
-  regions: ["lhr1"],
-};
-
 export async function GET({ request }) {
   if (request.headers.get("Authorization") !== `Bearer ${env.CRON_SECRET}`) return error(401);
 
