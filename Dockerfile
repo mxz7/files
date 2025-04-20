@@ -14,16 +14,16 @@ RUN npm install -g pnpm
 FROM base as build
 
 # Install packages needed to build node modules
-RUN apt update -qq && \
-    apt install --no-install-recommends -y build-essential node-gyp openssl pkg-config python-is-python3
+# RUN apt update -qq && \
+#     apt install --no-install-recommends -y build-essential node-gyp openssl pkg-config python-is-python3
 
 # Install node modules
 COPY --link .npmrc package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile --prod=false
 
-# Generate Prisma Client
-COPY --link prisma .
-RUN npx prisma generate
+# # Generate Prisma Client
+# COPY --link prisma .
+# RUN npx prisma generate
 
 # Copy application code
 COPY --link . .
