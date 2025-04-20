@@ -1,9 +1,9 @@
 <script lang="ts">
   import { formatBytes } from "$lib/format";
+  import type { FileData } from "$lib/types/file";
   import { Check, CircleX, Copy } from "lucide-svelte";
   import toast from "svelte-french-toast";
   import { fly } from "svelte/transition";
-  import type { FileData } from "./file";
 
   interface Props {
     data: FileData;

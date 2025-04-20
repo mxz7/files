@@ -2,12 +2,12 @@
   import { removeExifData } from "$lib/exif";
   import { nanoid } from "$lib/nanoid";
   import { auth } from "$lib/stores";
+  import type { FileData } from "$lib/types/file";
   import { CloudUpload, Copy } from "lucide-svelte";
   import toast from "svelte-french-toast";
   import { cubicOut } from "svelte/easing";
   import { tweened } from "svelte/motion";
   import { writable } from "svelte/store";
-  import type { FileData } from "./file";
   import FileStatus from "./FileStatus.svelte";
 
   let formFiles = writable<FileList>();
