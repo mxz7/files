@@ -28,11 +28,11 @@
 </script>
 
 <div
-  class="w-full rounded-lg border border-accent border-opacity-5 bg-base-200 p-6"
+  class="border-accent/5 bg-base-200 w-full rounded-lg border p-6"
   in:fly|global={{ y: -50, duration: 750 }}
 >
-  <div class="flex w-full items-center gap-4 text-lg font-bold text-primary">
-    <h2 class="max-w-[75%] overflow-hidden text-ellipsis text-nowrap">{data.name}</h2>
+  <div class="text-primary flex w-full items-center gap-4 text-lg font-bold">
+    <h2 class="max-w-[75%] overflow-hidden text-nowrap text-ellipsis">{data.name}</h2>
     {#if data.uploadedId}
       <a
         href="https://cdn.maxz.dev/{data.uploadedId}"
