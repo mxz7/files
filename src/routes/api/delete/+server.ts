@@ -5,11 +5,6 @@ import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 
-export const config = {
-  runtime: "nodejs20.x",
-  regions: ["lhr1"],
-};
-
 export async function DELETE({ locals, request }) {
   const auth = await locals.validate(false);
 

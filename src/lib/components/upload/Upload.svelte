@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { removeExifData } from "$lib/exif";
-  import { nanoid } from "$lib/nanoid";
   import { auth } from "$lib/stores";
   import type { FileData } from "$lib/types/file";
   import { CloudUpload, Copy } from "lucide-svelte";
+  import { nanoid } from "nanoid/non-secure";
   import toast from "svelte-french-toast";
   import { cubicOut } from "svelte/easing";
   import { tweened } from "svelte/motion";
@@ -16,61 +15,55 @@
   let stripExif = $state(true);
 
   async function handleFile(file: File) {
-    if (stripExif && file.type === "image/jpeg") {
-      console.log("removing exif");
-      file = await removeExifData(file);
-
-      console.log("removed exif");
-    }
-
     const type = file.type;
     const size = file.size;
 
-    console.log(type, size);
+    const clientId = nanoid();
 
-    const id = nanoid();
+    files.push({
+      id: clientId,
+      status: "metadata",
+      progress: tweened(0, { easing: cubicOut }),
+      name: file.name,
+      type,
+      size,
+    });
 
-    files = [
-      ...files,
-      {
-        id,
-        status: "processing",
-        progress: tweened(0, { easing: cubicOut }),
-        name: file.name,
-        type,
-        size,
-      },
-    ];
+    const index = files.findIndex((i) => i.id === clientId);
 
-    const index = files.findIndex((i) => i.id === id);
-
-    const presigned = await fetch("/api/upload", {
+    const uploadResponse = await fetch("/api/upload", {
       method: "POST",
       headers: {
         Accept: "application/json",
       },
-      body: JSON.stringify({ type, size, label: file.name, expire: expireIn }),
+      body: JSON.stringify({ bytes: size, label: file.name, expire: expireIn }),
     });
 
-    if (presigned.status !== 200) {
+    if (uploadResponse.status !== 200) {
       files[index].status = "error";
-      console.error(presigned);
+      files[index].progress.set(100, { duration: 500 });
+      console.error(uploadResponse);
       return;
     }
 
+    const { id }: { id: string } = await uploadResponse.json();
+
+    files[index].status = "uploading";
     files[index].progress.set(85, { duration: 15000 });
 
-    const { url, id: uploadedID } = await presigned.json();
+    const formData = new FormData();
+    formData.set("file", file);
 
-    const uploadRes = await fetch(url, { method: "PUT", body: file });
+    const uploadRes = await fetch(`/api/upload/${id}`, { method: "PUT", body: formData });
 
     if (uploadRes.status === 200) {
       files[index].status = "done";
       files[index].progress.set(100, { duration: 1000 });
-      files[index].uploadedId = uploadedID;
+      files[index].uploadedId = await uploadRes.json().then((r) => r.id);
     } else {
       console.error(uploadRes);
       files[index].status = "error";
+      files[index].progress.set(100, { duration: 500 });
     }
   }
 
@@ -164,7 +157,7 @@
       value={31556952000}
       bind:group={expireIn}
     />
-    {#if $auth.authenticated && $auth.user.admin}
+    {#if $auth?.authenticated && $auth?.user.admin}
       <input
         type="radio"
         name="expire"
@@ -182,19 +175,8 @@
   {/if}
 </div>
 
-<div class="flex items-center gap-2 pb-4">
-  <input
-    type="checkbox"
-    name="stripexif"
-    id="stripexif"
-    bind:checked={stripExif}
-    class="checkbox-primary checkbox checkbox-xs"
-  />
-  <label for="stripexif" class="text-sm">Strip EXIF data from JPEG images</label>
-</div>
-
 <label
-  class="border-accent/15 bg-base-300 hover:border-accent/25 flex h-fit w-full cursor-pointer items-center justify-center rounded-lg border p-4 duration-200"
+  class="border-accent/15 bg-base-200 hover:border-accent/25 flex h-fit w-full cursor-pointer items-center justify-center rounded-lg border p-4 duration-200"
   for="file"
   ondrop={handleDrop}
   ondragover={(e) => e.preventDefault()}

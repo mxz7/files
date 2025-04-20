@@ -1,0 +1,15 @@
+meta {
+  name: upload with id
+  type: http
+  seq: 2
+}
+
+put {
+  url: http://[::1]:5173/api/upload/9SVyogHL5g
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  file: @file(/Users/max/Downloads/IMG_1626.jpeg)
+}

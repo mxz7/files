@@ -50,7 +50,7 @@
   <p>{formatBytes(data.size)}</p>
 
   <div class="mt-1 flex w-full items-center gap-2">
-    {#if data.status === "processing" || data.status === "uploading"}
+    {#if data.status === "metadata" || data.status === "uploading"}
       <span class="loading loading-spinner loading-xs"></span>
     {:else if data.status === "error"}
       <span class="tooltip tooltip-error" data-tip="failed to upload">

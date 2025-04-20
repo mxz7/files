@@ -4,7 +4,7 @@
   import { Files, Gift, LogOut, ShieldCheck, Upload, UserSearch } from "lucide-svelte";
 </script>
 
-<div class="drawer-side z-10 rounded-lg lg:h-fit">
+<div class="drawer-side z-10 -mt-2 rounded-lg pt-2 lg:h-fit">
   <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
   <ul class="menu bg-base-200 text-base-content min-h-full w-80 p-4">
     <li>

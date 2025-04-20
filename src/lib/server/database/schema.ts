@@ -26,7 +26,7 @@ export const uploads = sqliteTable(
     createdIp: text("created_ip").notNull(),
     createdByUser: text("created_by_user").references(() => users.id, { onDelete: "set null" }),
     expireAt: integer("expire_at", { mode: "timestamp" }).notNull(),
-    bytes: integer("bytes").notNull(),
+    bytes: integer("bytes"), // will be null when file is not uploaded
   },
   (table) => ({
     userIdx: index("uploads_user_idx").on(table.createdByUser),
