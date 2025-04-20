@@ -8,11 +8,11 @@
 </svelte:head>
 
 <h1
-  class="mt-16 w-full bg-gradient-to-r from-primary to-info bg-clip-text text-center text-3xl font-bold text-transparent md:text-5xl"
+  class="from-primary to-info mt-16 w-full bg-gradient-to-r bg-clip-text text-center text-3xl font-bold text-transparent md:text-5xl"
 >
   files.maxz.dev
 </h1>
-<p class="text-center text-sm italic text-secondary">private file storage</p>
+<p class="text-accent text-center text-sm italic">private file storage</p>
 
 <div class="mt-8 flex w-full justify-center">
   <div class="w-full px-4 md:max-w-4xl md:px-0">
@@ -21,7 +21,7 @@
         <span class="loading loading-spinner loading-lg"></span>
       </div>
     {:else if $auth && !$auth.authenticated}
-      <h3 class="text-center text-error">You must be logged in to upload files</h3>
+      <h3 class="text-error text-center">You must be logged in to upload files</h3>
       <div class="mt-2 flex w-full justify-center gap-4">
         <a href="/login" class="btn">Log in</a>
         <a href="/signup" class="btn">Sign up</a>

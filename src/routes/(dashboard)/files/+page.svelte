@@ -52,7 +52,7 @@
       {#if $errors.label}
         <p class="text-error">{$errors.label}</p>
       {/if}
-      <button class="btn btn-secondary">Submit</button>
+      <button class="btn btn-primary">Submit</button>
     </form>
   </div>
   <form method="dialog" class="modal-backdrop backdrop-blur-lg">
@@ -189,7 +189,7 @@
         <tr>
           <td class="w-fit">
             <div
-              class="flex w-fit max-w-52 items-center gap-3 overflow-hidden text-ellipsis text-nowrap"
+              class="flex w-fit max-w-52 items-center gap-3 overflow-hidden text-nowrap text-ellipsis"
             >
               {#if file.id.endsWith("png") || file.id.endsWith("jpeg") || file.id.endsWith("jpg") || file.id.endsWith("webp") || file.id.endsWith("avif") || file.id.endsWith("gif")}
                 <div class="avatar">
@@ -208,7 +208,7 @@
                   <a
                     href="https://cdn.maxz.dev/{file.id}"
                     target="_blank"
-                    class="link-hover overflow-hidden text-ellipsis text-nowrap font-bold"
+                    class="link-hover overflow-hidden font-bold text-nowrap text-ellipsis"
                   >
                     {file.label}
                   </a>

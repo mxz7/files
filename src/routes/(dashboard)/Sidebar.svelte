@@ -6,12 +6,12 @@
 
 <div class="drawer-side z-10 rounded-lg lg:h-fit">
   <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-  <ul class="menu min-h-full w-80 bg-base-200 p-4 text-base-content">
+  <ul class="menu bg-base-200 text-base-content min-h-full w-80 p-4">
     <li>
       <a
         href="/files"
         class="{$page.url.pathname === '/files'
-          ? 'font-semibold text-secondary'
+          ? 'text-primary font-semibold'
           : ''} flex items-center"
       >
         <Files size={16} strokeWidth={2.5} />
@@ -23,7 +23,7 @@
       <a
         href="/upload"
         class="{$page.url.pathname === '/upload'
-          ? 'font-semibold text-secondary'
+          ? 'text-primary font-semibold'
           : ''} flex items-center"
       >
         <Upload size={16} strokeWidth={2.5} />
@@ -44,7 +44,7 @@
           <a
             href="/invites"
             class="{$page.url.pathname.startsWith('/invites')
-              ? 'font-semibold text-secondary'
+              ? 'text-primary font-semibold'
               : ''} flex items-center"
           >
             <Gift size={16} strokeWidth={2.5} />
@@ -56,7 +56,7 @@
           <a
             href="/users"
             class="{$page.url.pathname.startsWith('/users')
-              ? 'font-semibold text-secondary'
+              ? 'text-primary font-semibold'
               : ''} flex items-center"
           >
             <UserSearch size={16} strokeWidth={2.5} />
