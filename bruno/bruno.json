@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "files.maxz.dev",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

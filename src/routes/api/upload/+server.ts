@@ -2,16 +2,15 @@ import { nanoid } from "$lib/nanoid.js";
 import db from "$lib/server/database/db.js";
 import { uploads } from "$lib/server/database/schema.js";
 import { lucia } from "$lib/server/lucia.js";
-import s3 from "$lib/server/s3.js";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { error, json } from "@sveltejs/kit";
 import dayjs from "dayjs";
+import { z } from "zod";
 
-export const config = {
-  runtime: "nodejs20.x",
-  regions: ["lhr1"],
-};
+const schema = z.object({
+  label: z.string().min(1).max(50),
+  expire: z.number().min(0).max(3.154e12),
+  bytes: z.number(),
+});
 
 export async function POST({ locals, getClientAddress, request }) {
   let auth = await locals.validate(false);
@@ -31,35 +30,34 @@ export async function POST({ locals, getClientAddress, request }) {
     }
   }
 
-  if (!auth.authenticated) return error(401);
+  if (!auth.authenticated) return error(401, { message: "Unauthorized" });
 
-  const { type, size, label, expire } = await request.json();
+  let jsonData;
+  try {
+    jsonData = await request.json();
+  } catch {
+    return error(400);
+  }
 
-  if (size > 1000000000) return error(400);
-  if (expire > 31556952000 && !auth.user.admin) return error(400);
+  const data = await schema.safeParseAsync(jsonData);
 
-  const id = `${nanoid()}.${type.split("/")[1]}`;
+  if (!data.success) {
+    return error(400, { message: data.error.message });
+  }
 
-  const presigned = await getSignedUrl(
-    s3,
-    new PutObjectCommand({
-      Bucket: "maxz-dev",
-      Key: id,
-      ContentType: type,
-      ContentLength: parseInt(size),
-    }),
-    { expiresIn: 300 },
-  );
+  if (data.data.bytes > 1000000000) return error(400, { message: "File too large" });
+  if (data.data.expire > 31556952000 && !auth.user.admin) return error(400);
+
+  const id = nanoid();
 
   await db.insert(uploads).values({
-    bytes: size,
     createdIp: getClientAddress(),
     id,
-    label,
+    label: data.data.label,
     createdByUser: auth.user.id,
-    expireAt: dayjs().add(expire, "milliseconds").toDate(),
+    expireAt: dayjs().add(data.data.expire, "milliseconds").toDate(),
     createdAt: new Date(),
   });
 
-  return json({ url: presigned, id });
+  return json({ id });
 }
