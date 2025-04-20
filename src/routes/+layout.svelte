@@ -1,12 +1,12 @@
 <script lang="ts">
   import { dev } from "$app/environment";
-  import Navbar from "$lib/components/navbar.svelte";
+  import Navbar from "$lib/components/NavigationBar.svelte";
   import { getLocalAuth } from "$lib/stores";
   import { onMount } from "svelte";
   import { Toaster } from "svelte-french-toast";
   import "../app.css";
   interface Props {
-    children?: import('svelte').Snippet;
+    children?: import("svelte").Snippet;
   }
 
   let { children }: Props = $props();
