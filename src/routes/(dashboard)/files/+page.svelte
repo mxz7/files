@@ -10,7 +10,7 @@
 
   let { data } = $props();
 
-  let renameModal: HTMLDialogElement = $state();
+  let renameModal: HTMLDialogElement;
 
   const { form, enhance, errors, constraints, delayed } = superForm(data.form, {
     delayMs: 250,
