@@ -21,6 +21,35 @@ const exifTypes = [
   "video/x-matroska",
 ];
 
+const mimeToExtensionMap = new Map<string, string>([
+  ["image/jpeg", "jpg"],
+  ["image/png", "png"],
+  ["image/gif", "gif"],
+  ["image/bmp", "bmp"],
+  ["image/tiff", "tiff"],
+  ["image/webp", "webp"],
+  ["text/plain", "txt"],
+  ["text/csv", "csv"],
+  ["text/html", "html"],
+  ["text/xml", "xml"],
+  ["text/css", "css"],
+  ["audio/mpeg", "mp3"],
+  ["audio/wav", "wav"],
+  ["audio/ogg", "ogg"],
+  ["video/mp4", "mp4"],
+  ["video/webm", "webm"],
+  ["video/ogg", "ogg"],
+  ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx"],
+  ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx"],
+  ["application/vnd.openxmlformats-officedocument.presentationml.presentation", "pptx"],
+  ["application/x-tar", "tar"],
+  ["application/gzip", "gz"],
+  ["application/zip", "zip"],
+  ["application/vnd.rar", "rar"],
+  ["application/pdf", "pdf"],
+  ["application/javascript", "js"],
+]);
+
 export async function PUT({ request, params, locals }) {
   let auth = await locals.validate(false);
 
@@ -79,19 +108,10 @@ export async function PUT({ request, params, locals }) {
 
   let key = id;
 
-  switch (file.type) {
-    case "video/quicktime":
-      key += ".mov";
-      break;
-    case "video/x-msvideo":
-      key += ".avi";
-      break;
-    case "video/x-matroska":
-      key += ".mkv";
-      break;
-    default:
-      key += `.${file.type.split("/")[1]}`;
-      break;
+  if (mimeToExtensionMap.has(file.type)) {
+    key += `.${mimeToExtensionMap.get(file.type)}`;
+  } else {
+    key += `.${file.type.split("/")[1]}`;
   }
 
   await s3.send(
