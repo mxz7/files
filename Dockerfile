@@ -51,6 +51,7 @@ COPY --from=build /app/package.json /app
 # Set production environment
 ENV NODE_ENV="production"
 ENV ADDRESS_HEADER="cf-connecting-ip"
+ENV BODY_SIZE_LIMIT="1GB"
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
