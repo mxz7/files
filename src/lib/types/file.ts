@@ -1,7 +1,7 @@
 import type { Tweened } from "svelte/motion";
 
 export type FileData = {
-  status: "processing" | "uploading" | "done" | "error";
+  status: "metadata" | "uploading" | "done" | "error";
   progress: Tweened<number>;
   name: string;
   type: string;
