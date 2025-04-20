@@ -5,7 +5,11 @@ meta {
 }
 
 put {
-  url: http://[::1]:5173/api/upload/1
-  body: none
+  url: http://[::1]:5173/api/upload/9SVyogHL5g
+  body: multipartForm
   auth: inherit
+}
+
+body:multipart-form {
+  file: @file(/Users/max/Downloads/IMG_1626.jpeg)
 }
