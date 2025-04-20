@@ -1,4 +1,4 @@
-import { exiftool } from "exiftool-vendored";
+import { ExifTool } from "exiftool-vendored";
 import { readFile, writeFile } from "node:fs/promises";
 
 let inUse = false;
@@ -7,7 +7,16 @@ export async function stripExif(
   file: File,
   id: string,
 ): Promise<{ success: true; file: Buffer } | { success: false }> {
+  if (inUse) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(stripExif(file, id));
+      }, 100);
+    });
+  }
+
   inUse = true;
+  const exiftool = new ExifTool();
   try {
     await writeFile(`/tmp/${id}`, Buffer.from(await file.arrayBuffer()));
 
@@ -25,8 +34,10 @@ export async function stripExif(
   } catch (e) {
     inUse = false;
     console.error(e);
+    await exiftool.end();
     return { success: false };
   } finally {
+    await exiftool.end();
     inUse = false;
   }
 }
