@@ -176,7 +176,7 @@
 </div>
 
 <label
-  class="border-accent/15 bg-base-300 hover:border-accent/25 flex h-fit w-full cursor-pointer items-center justify-center rounded-lg border p-4 duration-200"
+  class="border-accent/15 bg-base-200 hover:border-accent/25 flex h-fit w-full cursor-pointer items-center justify-center rounded-lg border p-4 duration-200"
   for="file"
   ondrop={handleDrop}
   ondragover={(e) => e.preventDefault()}
