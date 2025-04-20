@@ -107,11 +107,21 @@ export async function PUT({ request, params, locals }) {
   }
 
   let key = id;
+  let contentType = file.type;
 
   if (mimeToExtensionMap.has(file.type)) {
     key += `.${mimeToExtensionMap.get(file.type)}`;
   } else {
     key += `.${file.type.split("/")[1]}`;
+  }
+
+  switch (contentType) {
+    case "text/html":
+      contentType = "text/plain";
+      break;
+    case "text/xml":
+      contentType = "text/plain";
+      break;
   }
 
   await s3.send(
