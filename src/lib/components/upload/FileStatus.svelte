@@ -14,7 +14,7 @@
   let progress = data.progress;
 
   function copyId() {
-    navigator.clipboard.writeText(`https://cdn.maxz.dev/${data.uploadedId}`).then(() => {
+    navigator.clipboard.writeText(`https://file.maxz.dev/${data.uploadedId}`).then(() => {
       toast.success("Copied to your clipboard", {
         style:
           "--tw-bg-opacity: 1; background-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-bg-opacity))); --tw-text-opacity: 1; color: var(--fallback-bc,oklch(var(--bc)/var(--tw-text-opacity)));",
@@ -35,7 +35,7 @@
     <h2 class="max-w-[75%] overflow-hidden text-nowrap text-ellipsis">{data.name}</h2>
     {#if data.uploadedId}
       <a
-        href="https://cdn.maxz.dev/{data.uploadedId}"
+        href="https://file.maxz.dev/{data.uploadedId}"
         target="_blank"
         class="link link-primary flex-1"
       >

@@ -195,7 +195,7 @@
                 <div class="avatar">
                   <div class="mask mask-squircle h-12 w-12">
                     <img
-                      src="https://cdn.maxz.dev/{file.id}"
+                      src="https://file.maxz.dev/{file.id}"
                       alt={file.label}
                       loading="lazy"
                       decoding="async"
@@ -206,7 +206,7 @@
               <div>
                 {#if file.label}
                   <a
-                    href="https://cdn.maxz.dev/{file.id}"
+                    href="https://file.maxz.dev/{file.id}"
                     target="_blank"
                     class="link-hover overflow-hidden font-bold text-nowrap text-ellipsis"
                   >
@@ -214,7 +214,7 @@
                   </a>
                 {:else}
                   <a
-                    href="https://cdn.maxz.dev/{file.id}"
+                    href="https://file.maxz.dev/{file.id}"
                     target="_blank"
                     class="link-hover font-semibold opacity-50">{file.id}</a
                   >

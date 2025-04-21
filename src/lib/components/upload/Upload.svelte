@@ -94,7 +94,7 @@
       .writeText(
         files
           .filter((i) => i.status === "done")
-          .map((i) => `https://cdn.maxz.dev/${i.uploadedId}`)
+          .map((i) => `https://file.maxz.dev/${i.uploadedId}`)
           .join("\n"),
       )
       .then(() => {
