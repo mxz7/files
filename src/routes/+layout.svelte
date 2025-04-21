@@ -24,8 +24,6 @@
       src="https://analytics.maxz.dev/js/script.js"
     ></script>
   {/if}
-
-  <link rel="apple-touch-icon" href="%sveltekit.assets%/apple-touch-icon.png" />
 </svelte:head>
 
 <Toaster />
