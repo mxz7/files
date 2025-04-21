@@ -3,8 +3,9 @@
   import { page } from "$app/stores";
   import Pages from "$lib/components/Pages.svelte";
   import { formatBytes } from "$lib/format.js";
+  import { debounce } from "$lib/utils";
   import dayjs from "dayjs";
-  import { ArrowDownNarrowWide, ArrowDownWideNarrow, Pen } from "lucide-svelte";
+  import { ArrowDownNarrowWide, ArrowDownWideNarrow, Pen, Search } from "lucide-svelte";
   import { superForm } from "sveltekit-superforms";
   import DeleteButton from "./DeleteButton.svelte";
 
@@ -20,6 +21,17 @@
     },
     invalidateAll: false,
   });
+
+  function updateSearch(value: string) {
+    const params = new URLSearchParams($page.url.searchParams);
+
+    if (value) params.set("search", value);
+    else params.delete("search");
+
+    goto(`?${params.toString()}`, { replaceState: true });
+  }
+
+  const updateSearchDebounced = debounce(updateSearch, 500);
 </script>
 
 <svelte:head>
@@ -59,6 +71,20 @@
     <button>close</button>
   </form>
 </dialog>
+
+<label for="search" class="input input-bordered input-primary w-full">
+  <Search size={16} />
+
+  <input
+    type="text"
+    name="search"
+    id="search"
+    placeholder="Search"
+    oninput={(e) => {
+      updateSearchDebounced(e.currentTarget.value);
+    }}
+  />
+</label>
 
 <div class="overflow-x-auto overflow-y-hidden">
   <table class="table">

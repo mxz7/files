@@ -1,15 +1,15 @@
 import db from "$lib/server/database/db.js";
 import { uploads } from "$lib/server/database/schema.js";
 import { redirect } from "@sveltejs/kit";
-import { SQL, asc, count, desc, eq, sql, type SQLWrapper } from "drizzle-orm";
+import { SQL, and, asc, count, desc, eq, like, or, sql, type SQLWrapper } from "drizzle-orm";
 import type { SQLiteColumn } from "drizzle-orm/sqlite-core";
 import { fail, message, superValidate } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
-import { object, string } from "zod";
+import { z } from "zod";
 
-const renameSchema = object({
-  id: string(),
-  label: string().min(0).max(100),
+const renameSchema = z.object({
+  id: z.string(),
+  label: z.string().min(1).max(100).trim(),
 });
 
 export async function load({ locals, url, depends }) {
@@ -29,8 +29,10 @@ export async function load({ locals, url, depends }) {
     direction: "desc" | "asc";
   } = { column: "createdAt", direction: "desc" };
 
+  const search = url.searchParams.get("search")?.toLowerCase() || "";
+
   if (url.searchParams.has("order")) {
-    const order = url.searchParams.get("order");
+    const order = url.searchParams.get("order")!;
     let orderColumn: SQLiteColumn;
     let orderDirection: (column: SQLWrapper) => SQL;
 
@@ -61,7 +63,7 @@ export async function load({ locals, url, depends }) {
       orderDisplay.direction = "desc";
     }
 
-    orderBy = orderDirection(orderColumn);
+    orderBy = orderDirection(orderColumn!);
   }
 
   const [files, fileCount] = await Promise.all([
@@ -78,11 +80,25 @@ export async function load({ locals, url, depends }) {
       .orderBy(orderBy)
       .offset((page - 1) * 25)
       .limit(25)
-      .where(eq(uploads.createdByUser, auth.user.id)),
+      .where(
+        and(
+          eq(uploads.createdByUser, auth.user.id),
+          search
+            ? or(like(uploads.label, `%${search}%`), like(uploads.id, `%${search}%`))
+            : undefined,
+        ),
+      ),
     db
       .select({ count: count() })
       .from(uploads)
-      .where(eq(uploads.createdByUser, auth.user.id))
+      .where(
+        and(
+          eq(uploads.createdByUser, auth.user.id),
+          search
+            ? or(like(uploads.label, `%${search}%`), like(uploads.id, `%${search}%`))
+            : undefined,
+        ),
+      )
       .limit(1)
       .then((r) => r[0]),
   ]);
