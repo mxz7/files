@@ -15,17 +15,22 @@ export async function stripExif(
     });
   }
 
+  console.log("[exif] initating");
+
   inUse = true;
   const exiftool = new ExifTool();
   try {
+    console.log("[exif] saving file");
     await writeFile(`/tmp/${id}`, Buffer.from(await file.arrayBuffer()));
 
+    console.log("[exif] writing exif data");
     await exiftool.write(
       `/tmp/${id}`,
       {},
       { writeArgs: ["-all=", "-Orientation:all", "-icc_profile:all"] },
     );
 
+    console.log("[exif] ending");
     await exiftool.end();
 
     inUse = false;
