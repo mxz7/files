@@ -214,38 +214,31 @@
       {#each data.files as file}
         <tr>
           <td class="w-fit">
-            <div
-              class="flex w-fit max-w-52 items-center gap-3 overflow-hidden text-nowrap text-ellipsis"
-            >
+            <div class="flex w-full max-w-80 items-center gap-3">
               {#if file.id.endsWith("png") || file.id.endsWith("jpeg") || file.id.endsWith("jpg") || file.id.endsWith("webp") || file.id.endsWith("avif") || file.id.endsWith("gif")}
-                <div class="avatar">
-                  <div class="mask mask-squircle h-12 w-12">
-                    <img
-                      src="https://file.maxz.dev/{file.id}"
-                      alt={file.label}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
-                </div>
+                <img
+                  src="https://file.maxz.dev/{file.id}"
+                  alt={file.label}
+                  loading="lazy"
+                  decoding="async"
+                  class="h-12 w-12 rounded-lg object-cover"
+                />
               {/if}
-              <div>
-                {#if file.label}
-                  <a
-                    href="https://file.maxz.dev/{file.id}"
-                    target="_blank"
-                    class="link-hover overflow-hidden font-bold text-nowrap text-ellipsis"
-                  >
-                    {file.label}
-                  </a>
-                {:else}
-                  <a
-                    href="https://file.maxz.dev/{file.id}"
-                    target="_blank"
-                    class="link-hover font-semibold opacity-50">{file.id}</a
-                  >
-                {/if}
-              </div>
+              {#if file.label}
+                <a
+                  href="https://file.maxz.dev/{file.id}"
+                  target="_blank"
+                  class="link-hover truncate font-bold"
+                >
+                  {file.label}
+                </a>
+              {:else}
+                <a
+                  href="https://file.maxz.dev/{file.id}"
+                  target="_blank"
+                  class="link-hover truncate font-semibold opacity-50">{file.id}</a
+                >
+              {/if}
             </div>
           </td>
           <td>
