@@ -223,11 +223,17 @@
             </div>
           </td>
           <td>
-            {formatBytes(file.bytes)}
+            {formatBytes(file.bytes || 0)}
           </td>
-          <td class="text-xs">{dayjs(file.createdAt).format("YYYY-MM-DD")}</td>
           <td class="text-xs">
-            {dayjs(file.expireAt).format("YYYY-MM-DD")}
+            <span class="tooltip" data-tip={dayjs(file.createdAt).format()}
+              >{dayjs(file.createdAt).format("YYYY-MM-DD")}</span
+            >
+          </td>
+          <td class="text-xs">
+            <span class="tooltip" data-tip={dayjs(file.expireAt).format()}
+              >{dayjs(file.expireAt).format("YYYY-MM-DD")}</span
+            >
           </td>
           <td class="flex items-center gap-1">
             <button
