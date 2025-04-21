@@ -116,15 +116,7 @@
 
 <h2 class="pb-2 font-semibold">Expire in:</h2>
 <div class="flex">
-  <div class="grid w-[60%] grid-cols-3 gap-4 pb-4">
-    <input
-      type="radio"
-      name="expire"
-      class="btn btn-sm lg:btn"
-      aria-label="1 hour"
-      value={3600000}
-      bind:group={expireIn}
-    />
+  <div class="flex gap-4 pb-4">
     <input
       type="radio"
       name="expire"
