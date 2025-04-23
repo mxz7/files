@@ -18,8 +18,8 @@ importers:
         specifier: ^0.10.0
         version: 0.10.0
       '@lucia-auth/adapter-drizzle':
-        specifier: ^1.0.7
-        version: 1.0.7(lucia@3.2.2)
+        specifier: ^1.1.0
+        version: 1.1.0(drizzle-orm@0.32.1(@libsql/client@0.10.0))(lucia@3.2.2)
       '@node-rs/argon2':
         specifier: ^1.8.3
         version: 1.8.3
@@ -865,9 +865,10 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@lucia-auth/adapter-drizzle@1.0.7':
-    resolution: {integrity: sha512-X/V7fLBca8EC/gPXCntwbQpb0+F9oEuRoHElvsi9rCrdnGhCMNxHgwAvgiQ6pes+rIYpyvx4n3hvjqo/fPo03A==}
+  '@lucia-auth/adapter-drizzle@1.1.0':
+    resolution: {integrity: sha512-iCTnZWvfI5lLZOdUHZYiXA1jaspIFEeo2extLxQ3DjP3uOVys7IPwBi7zezLIRu9dhro4H4Kji+7gSYyjcef2A==}
     peerDependencies:
+      drizzle-orm: '>= 0.29 <1'
       lucia: 3.x
 
   '@napi-rs/wasm-runtime@0.2.4':
@@ -3361,8 +3362,9 @@ snapshots:
   '@libsql/win32-x64-msvc@0.4.1':
     optional: true
 
-  '@lucia-auth/adapter-drizzle@1.0.7(lucia@3.2.2)':
+  '@lucia-auth/adapter-drizzle@1.1.0(drizzle-orm@0.32.1(@libsql/client@0.10.0))(lucia@3.2.2)':
     dependencies:
+      drizzle-orm: 0.32.1(@libsql/client@0.10.0)
       lucia: 3.2.2
 
   '@napi-rs/wasm-runtime@0.2.4':
