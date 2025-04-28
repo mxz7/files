@@ -43,8 +43,8 @@ importers:
         version: 1.2.0(svelte@5.28.2)
     devDependencies:
       '@catppuccin/daisyui':
-        specifier: ^2.0.0
-        version: 2.0.0(tailwindcss@4.1.4)
+        specifier: ^2.1.1
+        version: 2.1.1(tailwindcss@4.1.4)
       '@sveltejs/adapter-node':
         specifier: ^5.2.12
         version: 5.2.12(@sveltejs/kit@2.20.7(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.28.2)(vite@5.4.18(@types/node@22.14.1)(lightningcss@1.29.2)))(svelte@5.28.2)(vite@5.4.18(@types/node@22.14.1)(lightningcss@1.29.2)))
@@ -270,8 +270,8 @@ packages:
     resolution: {integrity: sha512-VtPOkrdPHZsKc/clNqyi9WUA8TINkZ4cGk63UUE3u4pmB2k+ZMQRDuIOagv8UVd6j7k0T3+RRIb7beKTebNbcw==}
     engines: {node: '>=6.9.0'}
 
-  '@catppuccin/daisyui@2.0.0':
-    resolution: {integrity: sha512-tj+eBP8BdcU85K15HSWGxOMdjuimN3BT/mIt+LE3vCACpP16BvGvXyz2Mxwp2wwORwk4wlQmD8oVA9UAsuiUfQ==}
+  '@catppuccin/daisyui@2.1.1':
+    resolution: {integrity: sha512-PrZttjj8kwfDBJ34sR+DN25Xtjvxx4T5p8uu/iiGYZR8UOsNwzMlO/alYDBwwTOLzP1NKLNRax09kCT39+QM+A==}
     peerDependencies:
       tailwindcss: ^4.0.17
 
@@ -2731,7 +2731,7 @@ snapshots:
       regenerator-runtime: 0.14.1
     optional: true
 
-  '@catppuccin/daisyui@2.0.0(tailwindcss@4.1.4)':
+  '@catppuccin/daisyui@2.1.1(tailwindcss@4.1.4)':
     dependencies:
       '@catppuccin/palette': 1.7.1
       tailwindcss: 4.1.4
