@@ -41,8 +41,8 @@
 
 <dialog class="modal" bind:this={renameModal}>
   <div class="modal-box">
-    <h3 class="text-lg font-bold">Rename {$form.id}</h3>
-    <form action="?/rename" method="POST" class="form-control mt-2 gap-4" use:enhance>
+    <h3 class="text-lg font-bold">Rename {$form.label || $form.id}</h3>
+    <form action="?/rename" method="POST" class="mt-2 flex flex-col gap-4" use:enhance>
       <input
         type="text"
         name="id"
@@ -58,13 +58,25 @@
         type="text"
         name="label"
         id="label"
-        class="input input-bordered input-primary"
+        class="input input-bordered input-primary w-full"
         bind:value={$form.label}
         {...$constraints.label}
       />
       {#if $errors.label}
         <p class="text-error">{$errors.label}</p>
       {/if}
+
+      <label for="anonymize" class="flex items-center gap-2">
+        <input
+          type="checkbox"
+          class="checkbox checkbox-sm checkbox-primary"
+          name="anonymize"
+          id="anonymize"
+          bind:checked={$form.anonymize}
+        />
+        Include label in URL
+      </label>
+
       <button class="btn btn-primary">Submit</button>
     </form>
   </div>
@@ -280,6 +292,8 @@
               onclick={() => {
                 $form.id = file.id;
                 $form.label = file.label;
+                $form.anonymize = file.id.includes("/");
+
                 renameModal.showModal();
               }}
             >

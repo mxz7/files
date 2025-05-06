@@ -1,5 +1,8 @@
+import { env } from "$env/dynamic/private";
 import db from "$lib/server/database/db.js";
 import { uploads } from "$lib/server/database/schema.js";
+import s3 from "$lib/server/s3.js";
+import { CopyObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { redirect } from "@sveltejs/kit";
 import { SQL, and, asc, count, desc, eq, like, or, sql, type SQLWrapper } from "drizzle-orm";
 import type { SQLiteColumn } from "drizzle-orm/sqlite-core";
@@ -10,6 +13,7 @@ import { z } from "zod";
 const renameSchema = z.object({
   id: z.string(),
   label: z.string().min(1).max(100).trim(),
+  anonymize: z.boolean().transform((v) => !v),
 });
 
 export async function load({ locals, url, depends }) {
@@ -139,7 +143,44 @@ export const actions = {
 
     if (upload.createdBy !== auth.user.id) return fail(403, { form });
 
-    await db.update(uploads).set({ label: form.data.label }).where(eq(uploads.id, form.data.id));
+    let id = form.data.id;
+    if (!form.data.anonymize) {
+      let original = form.data.id;
+
+      if (original.includes("/")) {
+        original = original.substring(original.lastIndexOf("/") + 1);
+      }
+
+      id =
+        encodeURIComponent(
+          form.data.label
+            .substring(0, 20)
+            .toLowerCase()
+            .trim()
+            .replaceAll(" ", "-")
+            .replaceAll("/", "-"),
+        ) + `/${original}`;
+    }
+
+    await db
+      .update(uploads)
+      .set({
+        label: form.data.label,
+        id,
+      })
+      .where(eq(uploads.id, form.data.id));
+
+    if (id !== form.data.id) {
+      await s3.send(
+        new CopyObjectCommand({
+          Bucket: env.S3_BUCKET,
+          CopySource: `${env.S3_BUCKET}/${form.data.id}`,
+          Key: id,
+        }),
+      );
+
+      await s3.send(new DeleteObjectCommand({ Bucket: env.S3_BUCKET, Key: form.data.id }));
+    }
 
     return message(form, "success");
   },

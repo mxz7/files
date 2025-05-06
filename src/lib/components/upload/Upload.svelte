@@ -3,16 +3,22 @@
   import type { FileData } from "$lib/types/file";
   import { CloudUpload, Copy } from "lucide-svelte";
   import { nanoid } from "nanoid/non-secure";
+  import { onMount } from "svelte";
   import toast from "svelte-french-toast";
   import { cubicOut } from "svelte/easing";
   import { tweened } from "svelte/motion";
   import { writable } from "svelte/store";
   import FileStatus from "./FileStatus.svelte";
 
+  interface Preferences {
+    expireIn: number;
+    anonymize: boolean;
+  }
+
   let formFiles = writable<FileList>();
   let files: FileData[] = $state([]);
   let expireIn: number = $state(31556952000);
-  let stripExif = $state(true);
+  let anonymize: boolean = $state(false);
 
   async function handleFile(file: File) {
     const type = file.type;
@@ -36,7 +42,12 @@
       headers: {
         Accept: "application/json",
       },
-      body: JSON.stringify({ bytes: size, label: file.name, expire: expireIn }),
+      body: JSON.stringify({
+        bytes: size,
+        label: file.name,
+        expire: expireIn,
+        fileName: !anonymize ? file.name : undefined,
+      }),
     });
 
     if (uploadResponse.status !== 200) {
@@ -54,7 +65,10 @@
     const formData = new FormData();
     formData.set("file", file);
 
-    const uploadRes = await fetch(`/api/upload/${id}`, { method: "PUT", body: formData });
+    const uploadRes = await fetch(`/api/upload/${encodeURIComponent(id)}`, {
+      method: "PUT",
+      body: formData,
+    });
 
     if (uploadRes.status === 200) {
       files[index].status = "done";
@@ -108,6 +122,38 @@
         });
       });
   }
+
+  let preferences: Preferences;
+  onMount(() => {
+    try {
+      preferences = JSON.parse(localStorage.getItem("preferences")!);
+    } catch {
+      preferences = {
+        expireIn,
+        anonymize: false,
+      };
+    }
+
+    if (!preferences) {
+      preferences = {
+        expireIn,
+        anonymize: false,
+      };
+    }
+
+    if (preferences.expireIn) expireIn = preferences.expireIn;
+    if (preferences.anonymize) anonymize = preferences.anonymize;
+  });
+
+  $effect(() => {
+    if (!preferences) return;
+    console.log(preferences);
+
+    if (expireIn !== preferences.expireIn) preferences.expireIn = expireIn;
+    if (anonymize !== preferences.anonymize) preferences.anonymize = anonymize;
+
+    localStorage.setItem("preferences", JSON.stringify(preferences));
+  });
 </script>
 
 <svelte:head>
@@ -166,6 +212,17 @@
     <button onclick={copyAll} class="btn text-primary"><Copy size={16} /> Copy all</button>
   {/if}
 </div>
+
+<label class="flex items-center gap-2 pb-2" for="anonymize">
+  <input
+    type="checkbox"
+    class="checkbox checkbox-primary checkbox-sm"
+    name="anonymize"
+    id="anonymize"
+    bind:checked={anonymize}
+  />
+  Anonymize file name
+</label>
 
 <label
   class="border-accent/15 bg-base-200 hover:border-accent/25 flex h-fit w-full cursor-pointer items-center justify-center rounded-lg border p-4 duration-200"

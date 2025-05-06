@@ -21,11 +21,11 @@ export async function stripExif(
   const exiftool = new ExifTool();
   try {
     console.log("[exif] saving file");
-    await writeFile(`/tmp/${id}`, Buffer.from(await file.arrayBuffer()));
+    await writeFile(`/tmp/${encodeURIComponent(id)}`, Buffer.from(await file.arrayBuffer()));
 
     console.log("[exif] writing exif data");
     await exiftool.write(
-      `/tmp/${id}`,
+      `/tmp/${encodeURIComponent(id)}`,
       {},
       { writeArgs: ["-all=", "-Orientation:all", "-icc_profile:all"] },
     );
@@ -35,7 +35,7 @@ export async function stripExif(
 
     inUse = false;
 
-    return { success: true, file: await readFile(`/tmp/${id}`) };
+    return { success: true, file: await readFile(`/tmp/${encodeURIComponent(id)}`) };
   } catch (e) {
     inUse = false;
     console.error(e);

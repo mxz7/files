@@ -10,6 +10,7 @@ const schema = z.object({
   label: z.string().min(1).max(50),
   expire: z.number().min(0).max(3.154e12),
   bytes: z.number(),
+  fileName: z.string().optional(),
 });
 
 export async function POST({ locals, getClientAddress, request }) {
@@ -48,7 +49,21 @@ export async function POST({ locals, getClientAddress, request }) {
   if (data.data.bytes > 1000000000) return error(400, { message: "File too large" });
   if (data.data.expire > 31556952000 && !auth.user.admin) return error(400);
 
-  const id = nanoid();
+  let id = nanoid();
+
+  if (data.data.fileName) {
+    id =
+      encodeURIComponent(
+        data.data.fileName
+          .substring(0, 20)
+          .toLowerCase()
+          .trim()
+          .replaceAll(" ", "-")
+          .replaceAll("/", "-"),
+      ) + `/${id}`;
+  }
+
+  console.log(id, data.data.fileName);
 
   await db.insert(uploads).values({
     createdIp: getClientAddress(),
