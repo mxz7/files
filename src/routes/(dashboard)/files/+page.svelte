@@ -5,7 +5,14 @@
   import { formatBytes } from "$lib/format.js";
   import { debounce } from "$lib/utils";
   import dayjs from "dayjs";
-  import { ArrowDownNarrowWide, ArrowDownWideNarrow, Copy, Pen, Search } from "lucide-svelte";
+  import {
+    ArrowDownNarrowWide,
+    ArrowDownWideNarrow,
+    Copy,
+    LoaderCircle,
+    Pen,
+    Search,
+  } from "lucide-svelte";
   import toast from "svelte-french-toast";
   import { superForm } from "sveltekit-superforms";
   import DeleteButton from "./DeleteButton.svelte";
@@ -15,7 +22,7 @@
   let renameModal: HTMLDialogElement;
 
   const { form, enhance, errors, constraints, delayed } = superForm(data.form, {
-    delayMs: 250,
+    delayMs: 50,
     onResult(event) {
       renameModal.close();
       invalidate("file_uploads");
@@ -77,7 +84,13 @@
         Include label in URL
       </label>
 
-      <button class="btn btn-primary">Submit</button>
+      <button class="btn btn-primary {$delayed ? 'btn-disabled' : ''}">
+        {#if $delayed}
+          <span class="animate-spin"><LoaderCircle /></span>
+        {:else}
+          Submit
+        {/if}
+      </button>
     </form>
   </div>
   <form method="dialog" class="modal-backdrop backdrop-blur-lg">
