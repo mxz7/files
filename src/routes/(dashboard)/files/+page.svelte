@@ -5,7 +5,8 @@
   import { formatBytes } from "$lib/format.js";
   import { debounce } from "$lib/utils";
   import dayjs from "dayjs";
-  import { ArrowDownNarrowWide, ArrowDownWideNarrow, Pen, Search } from "lucide-svelte";
+  import { ArrowDownNarrowWide, ArrowDownWideNarrow, Copy, Pen, Search } from "lucide-svelte";
+  import toast from "svelte-french-toast";
   import { superForm } from "sveltekit-superforms";
   import DeleteButton from "./DeleteButton.svelte";
 
@@ -255,6 +256,24 @@
             >
           </td>
           <td class="flex items-center gap-1">
+            <button
+              class="btn btn-ghost tooltip tooltip-top"
+              data-tip="Copy"
+              onclick={() => {
+                navigator.clipboard.writeText(`https://file.maxz.dev/${file.id}`);
+                toast.success("Copied to your clipboard", {
+                  style:
+                    "--tw-bg-opacity: 1; background-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-bg-opacity))); --tw-text-opacity: 1; color: var(--fallback-bc,oklch(var(--bc)/var(--tw-text-opacity)));",
+                  iconTheme: {
+                    primary: "#a6e3a1",
+                    secondary: "#FFFFFF",
+                  },
+                });
+              }}
+            >
+              <Copy size={16} />
+            </button>
+
             <button
               class="btn btn-ghost tooltip tooltip-top"
               data-tip="rename"
