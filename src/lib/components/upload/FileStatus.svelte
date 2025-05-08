@@ -37,7 +37,7 @@
       <a
         href="https://file.maxz.dev/{data.uploadedId}"
         target="_blank"
-        class="link link-primary flex-1"
+        class="link link-primary flex-1 truncate"
       >
         {data.uploadedId}
       </a>

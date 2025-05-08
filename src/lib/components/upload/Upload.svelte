@@ -3,7 +3,7 @@
   import type { FileData } from "$lib/types/file";
   import { CloudUpload, Copy } from "lucide-svelte";
   import { nanoid } from "nanoid/non-secure";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import toast from "svelte-french-toast";
   import { cubicOut } from "svelte/easing";
   import { tweened } from "svelte/motion";
@@ -147,12 +147,33 @@
 
   $effect(() => {
     if (!preferences) return;
-    console.log(preferences);
 
     if (expireIn !== preferences.expireIn) preferences.expireIn = expireIn;
     if (anonymize !== preferences.anonymize) preferences.anonymize = anonymize;
 
     localStorage.setItem("preferences", JSON.stringify(preferences));
+  });
+
+  function handlePaste(e: ClipboardEvent) {
+    const items = e.clipboardData?.items;
+
+    if (!items) return;
+
+    for (const item of items) {
+      if (item.kind === "file") {
+        const file = item.getAsFile();
+
+        if (file) handleFile(file);
+      }
+    }
+  }
+
+  onMount(() => {
+    window.addEventListener("paste", handlePaste);
+  });
+
+  onDestroy(() => {
+    window.removeEventListener("paste", handlePaste);
   });
 </script>
 
