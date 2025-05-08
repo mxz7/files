@@ -59,11 +59,12 @@ export async function POST({ locals, getClientAddress, request }) {
           .toLowerCase()
           .trim()
           .replaceAll(" ", "-")
-          .replaceAll("/", "-"),
+          .replaceAll("/", "-")
+          .split(".")
+          .slice(0, -1)
+          .join("."),
       ) + `/${id}`;
   }
-
-  console.log(id, data.data.fileName);
 
   await db.insert(uploads).values({
     createdIp: getClientAddress(),
