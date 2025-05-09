@@ -67,8 +67,8 @@ importers:
         specifier: ^0.31.1
         version: 0.31.1
       lucide-svelte:
-        specifier: ^0.503.0
-        version: 0.503.0(svelte@5.28.2)
+        specifier: ^0.509.0
+        version: 0.509.0(svelte@5.28.2)
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
@@ -1953,8 +1953,8 @@ packages:
   lucia@3.2.2:
     resolution: {integrity: sha512-P1FlFBGCMPMXu+EGdVD9W4Mjm0DqsusmKgO7Xc33mI5X1bklmsQb0hfzPhXomQr9waWIBDsiOjvr1e6BTaUqpA==}
 
-  lucide-svelte@0.503.0:
-    resolution: {integrity: sha512-oT1idMbgJKCCLWI4U7bdUYUZqxS78fiTGJuKGZ5u0NJNyuiUErDu3G7sXkYpfDwwspeid7gZSjrlJbTINEfErw==}
+  lucide-svelte@0.509.0:
+    resolution: {integrity: sha512-6U83jZ0RKvLYLGdx/hTqZyWcquwApQ2Q1E5bKFELXtOw7g8dk1P0qwbAQqs1fqWAtpNevtXTpgShHv/yWAcbjQ==}
     peerDependencies:
       svelte: ^3 || ^4 || ^5.0.0-next.42
 
@@ -4236,7 +4236,7 @@ snapshots:
       '@oslojs/crypto': 1.0.1
       '@oslojs/encoding': 1.1.0
 
-  lucide-svelte@0.503.0(svelte@5.28.2):
+  lucide-svelte@0.509.0(svelte@5.28.2):
     dependencies:
       svelte: 5.28.2
 
