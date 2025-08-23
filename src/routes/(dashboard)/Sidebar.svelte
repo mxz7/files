@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import { auth } from "$lib/stores";
-  import { Files, Gift, LogOut, ShieldCheck, Upload, UserSearch } from "lucide-svelte";
+  import { Files, Gift, KeyRound, LogOut, ShieldCheck, Upload, UserSearch } from "lucide-svelte";
 </script>
 
 <div class="drawer-side z-10 -mt-2 rounded-lg pt-2 lg:h-fit">
@@ -28,6 +28,18 @@
       >
         <Upload size={16} strokeWidth={2.5} />
         <span>Upload</span>
+      </a>
+    </li>
+
+    <li>
+      <a
+        href="/keys"
+        class="{$page.url.pathname === '/keys'
+          ? 'text-primary font-semibold'
+          : ''} flex items-center"
+      >
+        <KeyRound size={16} strokeWidth={2.5} />
+        <span>keys</span>
       </a>
     </li>
 
