@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { browser } from "$app/environment";
   import { auth } from "$lib/stores";
   import type { FileData } from "$lib/types/file";
   import { CloudUpload, Copy } from "lucide-svelte";
@@ -153,10 +154,12 @@
   }
 
   onMount(() => {
+    if (!browser) return;
     window.addEventListener("paste", handlePaste);
   });
 
   onDestroy(() => {
+    if (!browser) return;
     window.removeEventListener("paste", handlePaste);
   });
 </script>
@@ -165,7 +168,7 @@
   <title>upload :: files.maxz.dev</title>
 </svelte:head>
 
-<h2 class="pb-2 font-semibold">Expire in:</h2>
+<h2 class="pb-2 font-semibold">expire in:</h2>
 <div class="flex">
   <div class="flex gap-4 pb-4">
     <input
@@ -226,7 +229,7 @@
     id="anonymize"
     bind:checked={anonymize}
   />
-  Anonymize file name
+  anonymize file name
 </label>
 
 <label
@@ -240,8 +243,8 @@
     <div class="flex w-full justify-center">
       <CloudUpload class="text-primary" />
     </div>
-    <h1 class="text-lg font-semibold">Click or drag and drop to upload</h1>
-    <p class="text-sm">Max: 1GB per file</p>
+    <h1 class="text-lg font-semibold">click or drag and drop to upload</h1>
+    <p class="text-sm">max: 1GB per file</p>
   </div>
 </label>
 

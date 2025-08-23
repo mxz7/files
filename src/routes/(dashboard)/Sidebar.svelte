@@ -15,7 +15,7 @@
           : ''} flex items-center"
       >
         <Files size={16} strokeWidth={2.5} />
-        <span>Files</span>
+        <span>files</span>
       </a>
     </li>
 
@@ -27,7 +27,7 @@
           : ''} flex items-center"
       >
         <Upload size={16} strokeWidth={2.5} />
-        <span>Upload</span>
+        <span>upload</span>
       </a>
     </li>
 
@@ -48,7 +48,7 @@
         <li>
           <h2 class="-ml-1 font-semibold">
             <ShieldCheck size={16} strokeWidth={2.5} />
-            <span>Admin</span>
+            <span>admin</span>
           </h2>
         </li>
 
@@ -60,7 +60,7 @@
               : ''} flex items-center"
           >
             <Gift size={16} strokeWidth={2.5} />
-            <span>Invites</span>
+            <span>invites</span>
           </a>
         </li>
 
@@ -72,7 +72,7 @@
               : ''} flex items-center"
           >
             <UserSearch size={16} strokeWidth={2.5} />
-            <span>Users</span>
+            <span>users</span>
           </a>
         </li>
       </ul>
@@ -81,7 +81,7 @@
     <li>
       <a href="/logout" class="flex items-center">
         <LogOut size={16} strokeWidth={2.5} />
-        <span>Log out</span>
+        <span>log out</span>
       </a>
     </li>
   </ul>

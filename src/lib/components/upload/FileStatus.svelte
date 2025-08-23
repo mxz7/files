@@ -15,7 +15,7 @@
 
   function copyId() {
     navigator.clipboard.writeText(`https://file.maxz.dev/${data.uploadedId}`).then(() => {
-      toast.success("Copied to your clipboard", {
+      toast.success("copied to your clipboard", {
         style:
           "--tw-bg-opacity: 1; background-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-bg-opacity))); --tw-text-opacity: 1; color: var(--fallback-bc,oklch(var(--bc)/var(--tw-text-opacity)));",
         iconTheme: {

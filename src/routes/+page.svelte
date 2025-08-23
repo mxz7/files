@@ -21,10 +21,10 @@
         <span class="loading loading-spinner loading-lg"></span>
       </div>
     {:else if $auth && !$auth.authenticated}
-      <h3 class="text-error text-center">You must be logged in to upload files</h3>
+      <h3 class="text-error text-center">you must be logged in to upload files</h3>
       <div class="mt-2 flex w-full justify-center gap-4">
-        <a href="/login" class="btn">Log in</a>
-        <a href="/signup" class="btn">Sign up</a>
+        <a href="/login" class="btn">log in</a>
+        <a href="/signup" class="btn">sign up</a>
       </div>
     {:else if $auth.authenticated}
       <div class="flex justify-center">
