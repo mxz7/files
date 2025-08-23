@@ -1,16 +1,61 @@
+import { env } from "$env/dynamic/private";
 import { nanoid } from "$lib/nanoid.js";
 import db from "$lib/server/database/db.js";
 import { uploads } from "$lib/server/database/schema.js";
+import { stripExif } from "$lib/server/exif.js";
 import { lucia } from "$lib/server/lucia.js";
+import s3 from "$lib/server/s3.js";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { error, json } from "@sveltejs/kit";
 import dayjs from "dayjs";
 import { z } from "zod";
 
+const exifTypes = [
+  "image/jpeg",
+  "image/tiff",
+  "image/heic",
+  "image/heif",
+  "image/webp",
+  "image/png",
+  "video/quicktime",
+  "video/mp4",
+  "video/x-msvideo",
+  "video/x-matroska",
+];
+
+const mimeToExtensionMap = new Map<string, string>([
+  ["image/jpeg", "jpg"],
+  ["image/png", "png"],
+  ["image/gif", "gif"],
+  ["image/bmp", "bmp"],
+  ["image/tiff", "tiff"],
+  ["image/webp", "webp"],
+  ["text/plain", "txt"],
+  ["text/csv", "csv"],
+  ["text/html", "html"],
+  ["text/xml", "xml"],
+  ["text/css", "css"],
+  ["audio/mpeg", "mp3"],
+  ["audio/wav", "wav"],
+  ["audio/ogg", "ogg"],
+  ["video/mp4", "mp4"],
+  ["video/webm", "webm"],
+  ["video/ogg", "ogg"],
+  ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx"],
+  ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx"],
+  ["application/vnd.openxmlformats-officedocument.presentationml.presentation", "pptx"],
+  ["application/x-tar", "tar"],
+  ["application/gzip", "gz"],
+  ["application/zip", "zip"],
+  ["application/vnd.rar", "rar"],
+  ["application/pdf", "pdf"],
+  ["application/javascript", "js"],
+]);
+
 const schema = z.object({
   label: z.string().min(1).max(50),
-  expire: z.number().min(0).max(3.154e12),
-  bytes: z.number(),
-  fileName: z.string().optional(),
+  expire: z.coerce.number().min(0).max(3.154e12),
+  file: z.instanceof(File),
 });
 
 export async function POST({ locals, getClientAddress, request }) {
@@ -33,28 +78,30 @@ export async function POST({ locals, getClientAddress, request }) {
 
   if (!auth.authenticated) return error(401, { message: "Unauthorized" });
 
-  let jsonData;
+  let formData;
   try {
-    jsonData = await request.json();
+    formData = await request.formData();
   } catch {
-    return error(400);
+    return error(400, { message: "Invalid form data" });
   }
 
-  const data = await schema.safeParseAsync(jsonData);
+  const data = schema.safeParse(Object.fromEntries(formData.entries()));
 
   if (!data.success) {
-    return error(400, { message: data.error.message });
+    return error(400, { message: JSON.stringify(data.error.format()) });
   }
 
-  if (data.data.bytes > 1000000000) return error(400, { message: "File too large" });
-  if (data.data.expire > 31556952000 && !auth.user.admin) return error(400);
+  const { file, expire, label } = data.data;
+
+  if (file.size > 1000000000) return error(400, { message: "File too large" });
+  if (expire > 31556952000 && !auth.user.admin) return error(400);
 
   let id = nanoid();
 
-  if (data.data.fileName) {
+  if (file.name) {
     id =
       encodeURIComponent(
-        data.data.fileName
+        file.name
           .substring(0, 20)
           .toLowerCase()
           .trim()
@@ -66,14 +113,54 @@ export async function POST({ locals, getClientAddress, request }) {
       ) + `/${id}`;
   }
 
+  let buffer: Buffer;
+
+  if (exifTypes.includes(file.type)) {
+    const exif = await stripExif(file, id);
+
+    if (!exif.success) return error(500, { message: "Failed to strip exif data" });
+
+    buffer = exif.file;
+  } else {
+    buffer = Buffer.from(await file.arrayBuffer());
+  }
+
+  let key = id;
+  let contentType = file.type;
+
+  if (mimeToExtensionMap.has(file.type)) {
+    key += `.${mimeToExtensionMap.get(file.type)}`;
+  } else {
+    key += `.${file.type.split("/")[1]}`;
+  }
+
+  switch (contentType) {
+    case "text/html":
+      contentType = "text/plain";
+      break;
+    case "text/xml":
+      contentType = "text/plain";
+      break;
+  }
+
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: env.S3_BUCKET,
+      Key: key,
+      Body: buffer,
+      ContentType: file.type,
+    }),
+  );
+
   await db.insert(uploads).values({
     createdIp: getClientAddress(),
-    id,
+    id: key,
     label: data.data.label,
     createdByUser: auth.user.id,
     expireAt: dayjs().add(data.data.expire, "milliseconds").toDate(),
     createdAt: new Date(),
+    bytes: buffer.byteLength,
   });
 
-  return json({ id });
+  return json({ id: key });
 }

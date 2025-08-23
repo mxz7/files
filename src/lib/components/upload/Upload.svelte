@@ -37,17 +37,18 @@
 
     const index = files.findIndex((i) => i.id === clientId);
 
+    const formData = new FormData();
+
+    formData.set("label", file.name);
+    formData.set("expire", expireIn.toString());
+    formData.set("file", file);
+
+    files[index].status = "uploading";
+    files[index].progress.set(85, { duration: 15000 });
+
     const uploadResponse = await fetch("/api/upload", {
       method: "POST",
-      headers: {
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        bytes: size,
-        label: file.name,
-        expire: expireIn,
-        fileName: !anonymize ? file.name : undefined,
-      }),
+      body: formData,
     });
 
     if (uploadResponse.status !== 200) {
@@ -59,26 +60,9 @@
 
     const { id }: { id: string } = await uploadResponse.json();
 
-    files[index].status = "uploading";
-    files[index].progress.set(85, { duration: 15000 });
-
-    const formData = new FormData();
-    formData.set("file", file);
-
-    const uploadRes = await fetch(`/api/upload/${encodeURIComponent(id)}`, {
-      method: "PUT",
-      body: formData,
-    });
-
-    if (uploadRes.status === 200) {
-      files[index].status = "done";
-      files[index].progress.set(100, { duration: 1000 });
-      files[index].uploadedId = await uploadRes.json().then((r) => r.id);
-    } else {
-      console.error(uploadRes);
-      files[index].status = "error";
-      files[index].progress.set(100, { duration: 500 });
-    }
+    files[index].status = "done";
+    files[index].progress.set(100, { duration: 1000 });
+    files[index].uploadedId = id;
   }
 
   formFiles.subscribe((files) => {
