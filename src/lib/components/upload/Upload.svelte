@@ -42,6 +42,7 @@
 
     formData.set("label", file.name);
     formData.set("expire", expireIn.toString());
+    if (anonymize) formData.set("anonymize", "true");
     formData.set("file", file);
 
     files[index].status = "uploading";

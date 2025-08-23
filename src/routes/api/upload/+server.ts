@@ -55,6 +55,7 @@ const mimeToExtensionMap = new Map<string, string>([
 const schema = z.object({
   label: z.string().min(1).max(50),
   expire: z.coerce.number().min(0).max(3.154e12),
+  anonymize: z.coerce.boolean(),
   file: z.instanceof(File),
 });
 
@@ -91,14 +92,14 @@ export async function POST({ locals, getClientAddress, request }) {
     return error(400, { message: JSON.stringify(data.error.format()) });
   }
 
-  const { file, expire, label } = data.data;
+  const { file, expire, label, anonymize } = data.data;
 
   if (file.size > 1000000000) return error(400, { message: "File too large" });
   if (expire > 31556952000 && !auth.user.admin) return error(400);
 
   let id = nanoid();
 
-  if (file.name) {
+  if (file.name && !anonymize) {
     id =
       encodeURIComponent(
         file.name
@@ -153,9 +154,9 @@ export async function POST({ locals, getClientAddress, request }) {
   );
 
   await db.insert(uploads).values({
+    label,
     createdIp: getClientAddress(),
     id: key,
-    label: data.data.label,
     createdByUser: auth.user.id,
     expireAt: dayjs().add(data.data.expire, "milliseconds").toDate(),
     createdAt: new Date(),
