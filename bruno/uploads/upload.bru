@@ -6,7 +6,7 @@ meta {
 
 post {
   url: http://[::1]:5173/api/upload
-  body: json
+  body: multipartForm
   auth: inherit
 }
 
@@ -14,6 +14,14 @@ body:json {
   {
     "label": "meow",
     "expire": 6.048e8,
-    "bytes": 69
+    "anonymize": "true",
+    
   }
+}
+
+body:multipart-form {
+  label: meow
+  expire: 8.64e7
+  anonymize: true
+  file: @file(/Users/max/Desktop/pfp.jpg)
 }
