@@ -40,7 +40,7 @@
     "@lucia-auth/adapter-drizzle": "^1.1.0",
     "@node-rs/argon2": "^2.0.2",
     "@tailwindcss/vite": "^4.1.12",
-    "dayjs": "^1.11.14",
+    "dayjs": "^1.11.18",
     "drizzle-orm": "^0.44.5",
     "exiftool-vendored": "^30.2.0",
     "lucia": "^3.2.2",
