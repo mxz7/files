@@ -16,9 +16,6 @@ export async function stripExif(
       { writeArgs: ["-all=", "-Orientation:all", "-icc_profile:all"] },
     );
 
-    console.log("[exif] ending");
-    await exiftool.end();
-
     return { success: true, file: await readFile(`/tmp/${encodeURIComponent(id)}`) };
   } catch (e) {
     console.error(e);
