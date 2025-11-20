@@ -58,8 +58,8 @@ importers:
         specifier: ^24.3.0
         version: 24.3.0
       daisyui:
-        specifier: ^5.0.51
-        version: 5.0.51
+        specifier: ^5.1.5
+        version: 5.1.5
       dotenv:
         specifier: ^16.5.0
         version: 16.5.0
@@ -1659,8 +1659,8 @@ packages:
     resolution: {integrity: sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==}
     engines: {node: '>= 0.6'}
 
-  daisyui@5.0.51:
-    resolution: {integrity: sha512-lhB0BBOjt43/t5S1my0XChMy3ClXfmGlDU/XmSlx+N0h2y7cyWF+cnheeemguxNHb9TjqI66mxKI9qiFsOU3mA==}
+  daisyui@5.1.5:
+    resolution: {integrity: sha512-QgD/vtjjDX+HvacQ8okfPVCSQ2p4jjCKoer81FvphPx40gzSLxvCJP2TQDB04p/9cN9PzXPP53cS5c8cXyNUhA==}
 
   data-uri-to-buffer@4.0.1:
     resolution: {integrity: sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==}
@@ -4128,7 +4128,7 @@ snapshots:
 
   cookie@0.6.0: {}
 
-  daisyui@5.0.51: {}
+  daisyui@5.1.5: {}
 
   data-uri-to-buffer@4.0.1: {}
 
