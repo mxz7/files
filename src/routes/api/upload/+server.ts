@@ -100,18 +100,17 @@ export async function POST({ locals, getClientAddress, request }) {
   let id = nanoid();
 
   if (file.name && !anonymize) {
-    id =
-      encodeURIComponent(
-        file.name
-          .substring(0, 20)
-          .toLowerCase()
-          .trim()
-          .replaceAll(" ", "-")
-          .replaceAll("/", "-")
-          .split(".")
-          .slice(0, -1)
-          .join("."),
-      ) + `/${id}`;
+    id = `${id}/${encodeURIComponent(
+      file.name
+        .substring(0, 20)
+        .toLowerCase()
+        .trim()
+        .replaceAll(" ", "-")
+        .replaceAll("/", "-")
+        .split(".")
+        .slice(0, -1)
+        .join("."),
+    )}`;
   }
 
   let buffer: Buffer;
