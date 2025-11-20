@@ -10,10 +10,16 @@ export async function stripExif(
     await writeFile(`/tmp/${encodeURIComponent(id)}`, Buffer.from(await file.arrayBuffer()));
 
     console.log("[exif] writing exif data");
+
     await exiftool.write(
       `/tmp/${encodeURIComponent(id)}`,
       {},
-      { writeArgs: ["-all=", "-Orientation:all", "-icc_profile:all"] },
+      {
+        writeArgs: [
+          "-all=",
+          "-tagsfromfile @ -all= -TagsFromFile @ -icc_profile -Orientation -overwrite_original",
+        ],
+      },
     );
 
     return { success: true, file: await readFile(`/tmp/${encodeURIComponent(id)}`) };

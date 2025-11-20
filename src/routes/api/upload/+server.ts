@@ -99,19 +99,6 @@ export async function POST({ locals, getClientAddress, request }) {
 
   let id = nanoid();
 
-  if (file.name && !anonymize) {
-    id = `${id}/${encodeURIComponent(
-      file.name
-        .substring(0, 20)
-        .trim()
-        .replaceAll(" ", "-")
-        .replaceAll("/", "-")
-        .split(".")
-        .slice(0, -1)
-        .join("."),
-    )}`;
-  }
-
   let buffer: Buffer;
 
   if (exifTypes.includes(file.type)) {
@@ -126,6 +113,19 @@ export async function POST({ locals, getClientAddress, request }) {
 
   let key = id;
   let contentType = file.type;
+
+  if (file.name && !anonymize) {
+    key += `/${encodeURIComponent(
+      file.name
+        .substring(0, 20)
+        .trim()
+        .replaceAll(" ", "-")
+        .replaceAll("/", "-")
+        .split(".")
+        .slice(0, -1)
+        .join("."),
+    )}`;
+  }
 
   if (mimeToExtensionMap.has(file.type)) {
     key += `.${mimeToExtensionMap.get(file.type)}`;
