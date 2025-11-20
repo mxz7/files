@@ -103,7 +103,6 @@ export async function POST({ locals, getClientAddress, request }) {
     id = `${id}/${encodeURIComponent(
       file.name
         .substring(0, 20)
-        .toLowerCase()
         .trim()
         .replaceAll(" ", "-")
         .replaceAll("/", "-")
