@@ -44,7 +44,7 @@ importers:
     devDependencies:
       '@catppuccin/daisyui':
         specifier: ^2.1.1
-        version: 2.1.1(tailwindcss@4.1.18)
+        version: 2.1.1(tailwindcss@4.2.2)
       '@sveltejs/adapter-node':
         specifier: ^5.2.12
         version: 5.2.12(@sveltejs/kit@2.57.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.53.5)(vite@6.4.2(@types/node@24.3.0)(jiti@2.6.1)(lightningcss@1.30.2)))(svelte@5.53.5)(typescript@5.8.3)(vite@6.4.2(@types/node@24.3.0)(jiti@2.6.1)(lightningcss@1.30.2)))
@@ -88,8 +88,8 @@ importers:
         specifier: ^2.27.1
         version: 2.27.1(@sveltejs/kit@2.57.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.53.5)(vite@6.4.2(@types/node@24.3.0)(jiti@2.6.1)(lightningcss@1.30.2)))(svelte@5.53.5)(typescript@5.8.3)(vite@6.4.2(@types/node@24.3.0)(jiti@2.6.1)(lightningcss@1.30.2)))(@types/json-schema@7.0.15)(esbuild@0.25.12)(svelte@5.53.5)(typescript@5.8.3)
       tailwindcss:
-        specifier: ^4.1.18
-        version: 4.1.18
+        specifier: ^4.2.2
+        version: 4.2.2
       tslib:
         specifier: ^2.7.0
         version: 2.7.0
@@ -470,18 +470,6 @@ packages:
     resolution: {integrity: sha512-9meM/lRXxMi5PSUqEXRCtVjEZBGwB7P/D4yT8UG/mwIdze2aV4Vo6U5gD3+RsoHXKkHCfSxZKzmDssVlRj1QQA==}
     engines: {node: '>=18'}
     cpu: [ppc64]
-    os: [linux]
-
-  '@esbuild/linux-riscv64@0.18.20':
-    resolution: {integrity: sha512-WSxo6h5ecI5XH34KC7w5veNnKkju3zBRLEQNY7mv5mtBmrP/MjNBCAlsM2u5hDBlS3NGcTQpoBvRzqBcRtpq1A==}
-    engines: {node: '>=12'}
-    cpu: [riscv64]
-    os: [linux]
-
-  '@esbuild/linux-riscv64@0.25.12':
-    resolution: {integrity: sha512-Zr7KR4hgKUpWAwb1f3o5ygT04MzqVrGEGXGLnj15YQDJErYu/BGg+wmFlIDOdJp0PmB0lLvxFIOXZgFRrdjR0w==}
-    engines: {node: '>=18'}
-    cpu: [riscv64]
     os: [linux]
 
   '@esbuild/linux-s390x@0.18.20':
@@ -2144,6 +2132,9 @@ packages:
   tailwindcss@4.1.18:
     resolution: {integrity: sha512-4+Z+0yiYyEtUVCScyfHCxOYP06L5Ne+JiHhY2IjR2KWMIWhJOYZKLSGZaP5HkZ8+bY0cxfzwDE5uOmzFXyIwxw==}
 
+  tailwindcss@4.2.2:
+    resolution: {integrity: sha512-KWBIxs1Xb6NoLdMVqhbhgwZf2PGBpPEiwOqgI4pFIYbNTfBXiKYyWoTsXgBQ9WFg/OlhnvHaY+AEpW7wSmFo2Q==}
+
   tapable@2.3.0:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}
     engines: {node: '>=6'}
@@ -2817,10 +2808,10 @@ snapshots:
   '@babel/runtime@7.28.3':
     optional: true
 
-  '@catppuccin/daisyui@2.1.1(tailwindcss@4.1.18)':
+  '@catppuccin/daisyui@2.1.1(tailwindcss@4.2.2)':
     dependencies:
       '@catppuccin/palette': 1.7.1
-      tailwindcss: 4.1.18
+      tailwindcss: 4.2.2
 
   '@catppuccin/palette@1.7.1': {}
 
@@ -2931,12 +2922,6 @@ snapshots:
     optional: true
 
   '@esbuild/linux-ppc64@0.25.12':
-    optional: true
-
-  '@esbuild/linux-riscv64@0.18.20':
-    optional: true
-
-  '@esbuild/linux-riscv64@0.25.12':
     optional: true
 
   '@esbuild/linux-s390x@0.18.20':
@@ -4019,7 +4004,6 @@ snapshots:
       '@esbuild/linux-loong64': 0.18.20
       '@esbuild/linux-mips64el': 0.18.20
       '@esbuild/linux-ppc64': 0.18.20
-      '@esbuild/linux-riscv64': 0.18.20
       '@esbuild/linux-s390x': 0.18.20
       '@esbuild/linux-x64': 0.18.20
       '@esbuild/netbsd-x64': 0.18.20
@@ -4045,7 +4029,6 @@ snapshots:
       '@esbuild/linux-loong64': 0.25.12
       '@esbuild/linux-mips64el': 0.25.12
       '@esbuild/linux-ppc64': 0.25.12
-      '@esbuild/linux-riscv64': 0.25.12
       '@esbuild/linux-s390x': 0.25.12
       '@esbuild/linux-x64': 0.25.12
       '@esbuild/netbsd-arm64': 0.25.12
@@ -4471,6 +4454,8 @@ snapshots:
       - typescript
 
   tailwindcss@4.1.18: {}
+
+  tailwindcss@4.2.2: {}
 
   tapable@2.3.0: {}
 
