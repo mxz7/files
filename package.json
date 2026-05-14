@@ -19,7 +19,7 @@
     "@types/node": "^24.3.0",
     "daisyui": "^5.1.5",
     "dotenv": "^16.5.0",
-    "drizzle-kit": "^0.31.8",
+    "drizzle-kit": "^0.31.10",
     "lucide-svelte": "^0.542.0",
     "prettier": "^3.5.3",
     "prettier-plugin-svelte": "^3.3.3",
@@ -40,11 +40,11 @@
     "@lucia-auth/adapter-drizzle": "^1.1.0",
     "@node-rs/argon2": "^2.0.2",
     "@tailwindcss/vite": "^4.1.18",
-    "dayjs": "^1.11.19",
+    "dayjs": "^1.11.20",
     "drizzle-orm": "^0.45.2",
     "exiftool-vendored": "^30.2.0",
     "lucia": "^3.2.2",
-    "nanoid": "^5.1.6",
+    "nanoid": "^5.1.11",
     "svelte-french-toast": "^1.2.0"
   }
 }
