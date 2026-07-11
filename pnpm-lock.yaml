@@ -38,9 +38,9 @@ importers:
       nanoid:
         specifier: ^5.1.6
         version: 5.1.6
-      svelte-french-toast:
-        specifier: ^1.2.0
-        version: 1.2.0(svelte@5.53.5)
+      svelte-sonner:
+        specifier: ^1.1.1
+        version: 1.1.1(svelte@5.53.5)
     devDependencies:
       '@catppuccin/daisyui':
         specifier: ^2.1.1
@@ -2117,6 +2117,11 @@ packages:
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
+  runed@0.28.0:
+    resolution: {integrity: sha512-k2xx7RuO9hWcdd9f+8JoBeqWtYrm5CALfgpkg2YDB80ds/QE4w0qqu34A7fqiAwiBBSBQOid7TLxwxVC27ymWQ==}
+    peerDependencies:
+      svelte: ^5.7.0
+
   sade@1.8.1:
     resolution: {integrity: sha512-xal3CZX1Xlo/k4ApwCFrHVACi9fBqJ7V+mwhBsuf/1IOKbBy098Fex+Wa/5QMubw09pSZ/u8EY8PWgevJsXp1A==}
     engines: {node: '>=6'}
@@ -2158,15 +2163,10 @@ packages:
       svelte: ^4.0.0 || ^5.0.0-next.0
       typescript: '>=5.0.0'
 
-  svelte-french-toast@1.2.0:
-    resolution: {integrity: sha512-5PW+6RFX3xQPbR44CngYAP1Sd9oCq9P2FOox4FZffzJuZI2mHOB7q5gJBVnOiLF5y3moVGZ7u2bYt7+yPAgcEQ==}
+  svelte-sonner@1.1.1:
+    resolution: {integrity: sha512-5cd3p7wa4cq0NsqslMwdlPb7x1JglEZ/GKrLePWNr5bCxR1nagAVrY01FRFrXfUGs41miLt3C327+8XJo5BzZw==}
     peerDependencies:
-      svelte: ^3.57.0 || ^4.0.0
-
-  svelte-writable-derived@3.1.1:
-    resolution: {integrity: sha512-w4LR6/bYZEuCs7SGr+M54oipk/UQKtiMadyOhW0PTwAtJ/Ai12QS77sLngEcfBx2q4H8ZBQucc9ktSA5sUGZWw==}
-    peerDependencies:
-      svelte: ^3.2.1 || ^4.0.0-next.1 || ^5.0.0-next.94
+      svelte: ^5.0.0
 
   svelte@5.53.5:
     resolution: {integrity: sha512-YkqERnF05g8KLdDZwZrF8/i1eSbj6Eoat8Jjr2IfruZz9StLuBqo8sfCSzjosNKd+ZrQ8DkKZDjpO5y3ht1Pow==}
@@ -4407,6 +4407,11 @@ snapshots:
       '@rollup/rollup-win32-x64-msvc': 4.60.1
       fsevents: 2.3.3
 
+  runed@0.28.0(svelte@5.53.5):
+    dependencies:
+      esm-env: 1.2.2
+      svelte: 5.53.5
+
   sade@1.8.1:
     dependencies:
       mri: 1.2.0
@@ -4447,13 +4452,9 @@ snapshots:
     transitivePeerDependencies:
       - picomatch
 
-  svelte-french-toast@1.2.0(svelte@5.53.5):
+  svelte-sonner@1.1.1(svelte@5.53.5):
     dependencies:
-      svelte: 5.53.5
-      svelte-writable-derived: 3.1.1(svelte@5.53.5)
-
-  svelte-writable-derived@3.1.1(svelte@5.53.5):
-    dependencies:
+      runed: 0.28.0(svelte@5.53.5)
       svelte: 5.53.5
 
   svelte@5.53.5:

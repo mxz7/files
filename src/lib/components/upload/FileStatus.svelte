@@ -2,7 +2,7 @@
   import { formatBytes } from "$lib/format";
   import type { FileData } from "$lib/types/file";
   import { Check, CircleX, Copy } from "lucide-svelte";
-  import toast from "svelte-french-toast";
+  import { toast } from "svelte-sonner";
   import { fly } from "svelte/transition";
 
   interface Props {
@@ -15,14 +15,7 @@
 
   function copyId() {
     navigator.clipboard.writeText(`https://file.maxz.dev/${data.uploadedId}`).then(() => {
-      toast.success("copied to your clipboard", {
-        style:
-          "--tw-bg-opacity: 1; background-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-bg-opacity))); --tw-text-opacity: 1; color: var(--fallback-bc,oklch(var(--bc)/var(--tw-text-opacity)));",
-        iconTheme: {
-          primary: "#a6e3a1",
-          secondary: "#FFFFFF",
-        },
-      });
+      toast.success("copied to your clipboard");
     });
   }
 </script>

@@ -3,7 +3,7 @@
   import { invalidate } from "$app/navigation";
   import dayjs from "dayjs";
   import { Copy } from "lucide-svelte";
-  import toast from "svelte-french-toast";
+  import { toast } from "svelte-sonner";
   import DeleteButton from "./DeleteButton.svelte";
 
   let { data } = $props();
@@ -12,14 +12,7 @@
 
   function copyId(text: string) {
     navigator.clipboard.writeText(text).then(() => {
-      toast.success("Copied to your clipboard", {
-        style:
-          "--tw-bg-opacity: 1; background-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-bg-opacity))); --tw-text-opacity: 1; color: var(--fallback-bc,oklch(var(--bc)/var(--tw-text-opacity)));",
-        iconTheme: {
-          primary: "#a6e3a1",
-          secondary: "#FFFFFF",
-        },
-      });
+      toast.success("Copied to your clipboard");
     });
   }
 </script>
@@ -43,14 +36,7 @@
           invalidate("invites");
 
           if (result.status !== 200) {
-            toast.error("failed to create label", {
-              style:
-                "--tw-bg-opacity: 1; background-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-bg-opacity))); --tw-text-opacity: 1; color: var(--fallback-bc,oklch(var(--bc)/var(--tw-text-opacity)));",
-              iconTheme: {
-                primary: "#f38ba8",
-                secondary: "#FFFFFF",
-              },
-            });
+            toast.error("failed to create label");
           }
         };
       }}
