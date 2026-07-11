@@ -1,4 +1,4 @@
-import { object, string } from "zod/v4";
+import { object, string } from "zod";
 
 export const loginSchema = object({
   username: string().toLowerCase(),

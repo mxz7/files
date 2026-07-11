@@ -8,7 +8,7 @@ import { SQL, and, asc, count, desc, eq, like, or, sql, type SQLWrapper } from "
 import type { SQLiteColumn } from "drizzle-orm/sqlite-core";
 import { fail, message, superValidate } from "sveltekit-superforms";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 const renameSchema = z.object({
   id: z.string(),

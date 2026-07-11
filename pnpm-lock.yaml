@@ -100,8 +100,8 @@ importers:
         specifier: ^8.1.4
         version: 8.1.4(@types/node@24.3.0)(esbuild@0.25.12)(jiti@2.6.1)
       zod:
-        specifier: ^3.25.76
-        version: 3.25.76
+        specifier: ^4.4.3
+        version: 4.4.3
 
 packages:
 
@@ -2354,9 +2354,6 @@ packages:
     resolution: {integrity: sha512-KixLrhX/uPmRFnDgsZrzrk4x5SSJA+PmaE5adbfID9+3KPJcdxqRobaHU397EfWBqfQircrjKqvEqZ/mW5QH6w==}
     peerDependencies:
       zod: ^3.25 || ^4.0.14
-
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
   zod@4.4.3:
     resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
@@ -4641,7 +4638,4 @@ snapshots:
       zod: 4.4.3
     optional: true
 
-  zod@3.25.76: {}
-
-  zod@4.4.3:
-    optional: true
+  zod@4.4.3: {}
