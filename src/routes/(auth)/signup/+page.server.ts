@@ -7,7 +7,7 @@ import { hash } from "@node-rs/argon2";
 import { fail, redirect } from "@sveltejs/kit";
 import { and, eq, isNull } from "drizzle-orm";
 import { message, setError, superValidate } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
+import { zod4 as zod } from "sveltekit-superforms/adapters";
 
 export async function load({ locals }) {
   const auth = await locals.validate();

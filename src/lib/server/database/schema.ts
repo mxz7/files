@@ -1,4 +1,4 @@
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, sqliteTable, text, type AnySQLiteColumn } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey().notNull(),
@@ -7,14 +7,14 @@ export const users = sqliteTable("users", {
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   createdIp: text("created_ip"),
   admin: integer("admin", { mode: "boolean" }).default(false),
-  invite: text("invite").references(() => invites.id, { onDelete: "set null" }),
+  invite: text("invite").references((): AnySQLiteColumn => invites.id, { onDelete: "set null" }),
 });
 
 export const invites = sqliteTable("invites", {
   id: text("id").primaryKey().notNull(),
   label: text("label"),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  usedBy: text("used_by").references(() => users.id, { onDelete: "cascade" }),
+  usedBy: text("used_by").references((): AnySQLiteColumn => users.id, { onDelete: "cascade" }),
 });
 
 export const uploads = sqliteTable(

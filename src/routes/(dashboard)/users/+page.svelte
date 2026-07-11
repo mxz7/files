@@ -35,7 +35,13 @@
             <td>{dayjs(row.createdAt).format("YYYY-MM-DD HH:mm:ss")}</td>
             <td>{row.ip}</td>
             <td>{row.uploaded.toLocaleString()}</td>
-            <td>{formatBytes(parseInt(row.size))}</td>
+            <td>
+              {#if row.size}
+                {formatBytes(parseInt(row.size))}
+              {:else}
+                null
+              {/if}
+            </td>
           </tr>
         {/each}
       </tbody>

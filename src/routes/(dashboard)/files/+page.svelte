@@ -21,14 +21,16 @@
 
   let renameModal: HTMLDialogElement;
 
-  const { form, enhance, errors, constraints, delayed } = superForm(data.form, {
-    delayMs: 50,
-    onResult(event) {
-      renameModal.close();
-      invalidate("file_uploads");
-    },
-    invalidateAll: false,
-  });
+  const { form, enhance, errors, constraints, delayed } = $derived(
+    superForm(data.form, {
+      delayMs: 50,
+      onResult(event) {
+        renameModal.close();
+        invalidate("file_uploads");
+      },
+      invalidateAll: false,
+    }),
+  );
 
   function updateSearch(value: string) {
     const params = new URLSearchParams($page.url.searchParams);
@@ -73,13 +75,13 @@
         <p class="text-error">{$errors.label}</p>
       {/if}
 
-      <label for="anonymize" class="flex items-center gap-2">
+      <label for="includeLabelInUrl" class="flex items-center gap-2">
         <input
           type="checkbox"
           class="checkbox checkbox-sm checkbox-primary"
-          name="anonymize"
-          id="anonymize"
-          bind:checked={$form.anonymize}
+          name="includeLabelInUrl"
+          id="includeLabelInUrl"
+          bind:checked={$form.includeLabelInUrl}
         />
         Include label in URL
       </label>
@@ -304,8 +306,8 @@
               data-tip="rename"
               onclick={() => {
                 $form.id = file.id;
-                $form.label = file.label;
-                $form.anonymize = file.id.includes("/");
+                $form.label = file.label ?? "";
+                $form.includeLabelInUrl = file.id.includes("/");
 
                 renameModal.showModal();
               }}

@@ -11,7 +11,7 @@
 
   let { data }: Props = $props();
 
-  let progress = data.progress;
+  let progress = $derived(data.progress);
 
   function copyId() {
     navigator.clipboard.writeText(`https://file.maxz.dev/${data.uploadedId}`).then(() => {

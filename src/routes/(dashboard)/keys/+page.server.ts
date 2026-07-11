@@ -5,8 +5,8 @@ import { redirect } from "@sveltejs/kit";
 import dayjs from "dayjs";
 import { asc, eq } from "drizzle-orm";
 import { fail, message, superValidate } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
-import { z } from "zod";
+import { zod4 as zod } from "sveltekit-superforms/adapters";
+import { z } from "zod/v4";
 
 const createSessionSchema = z.object({
   days: z.number().min(1).max(700),
@@ -60,7 +60,7 @@ export const actions = {
 
     await db
       .update(sessionTable)
-      .set({ expiresAt: dayjs().add(form.data.days, "day").unix() })
+      .set({ expiresAt: dayjs().add(Number(form.data.days), "day").unix() })
       .where(eq(sessionTable.id, session.id));
 
     return message(form, session.id);

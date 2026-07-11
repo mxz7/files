@@ -1,17 +1,18 @@
 <script lang="ts">
   import dayjs from "dayjs";
-  import toast from "svelte-french-toast";
   import { superForm } from "sveltekit-superforms";
 
   let { data } = $props();
 
   let createModal: HTMLDialogElement;
 
-  const { form, errors, enhance, constraints, message } = superForm(data.form, {
-    onSubmit() {
-      createModal.close();
-    },
-  });
+  const { form, errors, enhance, constraints, message } = $derived(
+    superForm(data.form, {
+      onSubmit() {
+        createModal.close();
+      },
+    }),
+  );
 </script>
 
 <svelte:head>

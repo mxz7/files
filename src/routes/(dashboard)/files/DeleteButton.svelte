@@ -8,10 +8,10 @@
 
   let { id }: Props = $props();
   let loading = $state(false);
-  let modal: HTMLDialogElement = $state();
+  let modal = $state<HTMLDialogElement>();
 
   async function deleteImage() {
-    modal.close();
+    modal!.close();
     loading = true;
     const res = await fetch("/api/delete", {
       method: "DELETE",
@@ -31,7 +31,7 @@
 
     <div class="mt-4 flex w-full justify-center gap-2">
       <button class="btn btn-error" onclick={deleteImage}>Delete</button>
-      <button class="btn" onclick={() => modal.close()}>Cancel</button>
+      <button class="btn" onclick={() => modal!.close()}>Cancel</button>
     </div>
   </div>
   <form method="dialog" class="modal-backdrop backdrop-blur-lg">
@@ -42,7 +42,7 @@
 <button
   class="btn btn-ghost tooltip tooltip-top tooltip-error text-error"
   data-tip="delete"
-  onclick={() => modal.show()}
+  onclick={() => modal!.show()}
 >
   {#if loading}
     <span class="loading loading-spinner loading-xs text-error"></span>

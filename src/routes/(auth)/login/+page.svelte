@@ -5,17 +5,19 @@
 
   let { data } = $props();
 
-  const { form, errors, enhance, constraints, delayed } = superForm(data.form, {
-    delayMs: 100,
-    onResult(event) {
-      getLocalAuth();
-    },
-  });
+  const { form, errors, enhance, constraints, delayed } = $derived(
+    superForm(data.form, {
+      delayMs: 100,
+      onResult(event) {
+        getLocalAuth();
+      },
+    }),
+  );
 </script>
 
 <div class="mt-14 flex w-full justify-center">
   <div>
-    <h1 class="text-center text-4xl font-bold text-primary">Log in</h1>
+    <h1 class="text-primary text-center text-4xl font-bold">Log in</h1>
     <p class="mt-1 text-center text-sm">
       Or <a href="/signup" class="underline">sign up</a>
     </p>
@@ -36,8 +38,8 @@
         />
       </label>
 
-      {#if $errors.username}
-        <span class="mt-1 text-error">{$errors.username[0]}</span>
+      {#if Array.isArray($errors.username)}
+        <span class="text-error mt-1">{$errors.username[0]}</span>
       {/if}
 
       <label
@@ -55,8 +57,8 @@
         />
       </label>
 
-      {#if $errors.password}
-        <span class="mt-1 text-error">{$errors.password[0]}</span>
+      {#if Array.isArray($errors.password)}
+        <span class="text-error mt-1">{$errors.password[0]}</span>
       {/if}
 
       <button

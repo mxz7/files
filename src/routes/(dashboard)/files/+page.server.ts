@@ -7,13 +7,13 @@ import { redirect } from "@sveltejs/kit";
 import { SQL, and, asc, count, desc, eq, like, or, sql, type SQLWrapper } from "drizzle-orm";
 import type { SQLiteColumn } from "drizzle-orm/sqlite-core";
 import { fail, message, superValidate } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
-import { z } from "zod";
+import { zod4 as zod } from "sveltekit-superforms/adapters";
+import { z } from "zod/v4";
 
 const renameSchema = z.object({
   id: z.string(),
   label: z.string().min(1).max(100).trim(),
-  anonymize: z.boolean().transform((v) => !v),
+  includeLabelInUrl: z.boolean().default(false),
 });
 
 export async function load({ locals, url, depends }) {
@@ -144,7 +144,7 @@ export const actions = {
     if (upload.createdBy !== auth.user.id) return fail(403, { form });
 
     let id = form.data.id;
-    if (!form.data.anonymize) {
+    if (form.data.includeLabelInUrl) {
       let original = form.data.id;
 
       if (original.includes("/")) {

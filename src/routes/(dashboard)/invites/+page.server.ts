@@ -32,7 +32,11 @@ export const actions = {
 
     const formData = await request.formData();
 
-    const label = formData.get("label");
+    const labelEntry = formData.get("label");
+
+    if (typeof labelEntry !== "string") return fail(400);
+
+    const label = labelEntry.trim();
 
     if (!label) return fail(400);
 
