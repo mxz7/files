@@ -24,6 +24,9 @@ COPY --link .npmrc package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm fetch
 RUN pnpm install -r --offline
 
+# Copy source
+COPY --link . .
+
 # Builds sveltekit tsconfig which prisma needs
 RUN npx svelte-kit sync
 
