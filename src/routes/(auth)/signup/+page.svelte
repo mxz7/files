@@ -16,6 +16,7 @@
     }),
   );
 
+  // svelte-ignore state_referenced_locally
   message.subscribe((value) => {
     if (value === "ok") {
       toast.success("Logged in", {
