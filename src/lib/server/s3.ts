@@ -1,14 +1,20 @@
 import { env } from "$env/dynamic/private";
 import { S3Client } from "@aws-sdk/client-s3";
 
+const { S3_ENDPOINT, S3_REGION, S3_KEY_ID, S3_KEY } = env;
+
+if (!S3_ENDPOINT || !S3_REGION || !S3_KEY_ID || !S3_KEY) {
+  throw new Error("Missing required S3 configuration");
+}
+
 const s3 = new S3Client({
-  endpoint: env.S3_ENDPOINT,
-  region: env.S3_REGION,
+  endpoint: S3_ENDPOINT,
+  region: S3_REGION,
   requestChecksumCalculation: "WHEN_REQUIRED",
   responseChecksumValidation: "WHEN_REQUIRED",
   credentials: {
-    accessKeyId: env.S3_KEY_ID,
-    secretAccessKey: env.S3_KEY,
+    accessKeyId: S3_KEY_ID,
+    secretAccessKey: S3_KEY,
   },
 });
 
