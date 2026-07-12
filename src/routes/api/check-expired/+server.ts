@@ -1,7 +1,7 @@
 import { env } from "$env/dynamic/private";
 import db from "$lib/server/database/db.js";
 import { sessions, uploads } from "$lib/server/database/schema.js";
-import s3 from "$lib/server/s3.js";
+import { s3 } from "$lib/server/s3.js";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { error, json } from "@sveltejs/kit";
 import dayjs from "dayjs";

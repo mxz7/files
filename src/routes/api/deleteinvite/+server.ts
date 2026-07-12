@@ -1,6 +1,6 @@
 import db from "$lib/server/database/db.js";
 import { invites, uploads, users } from "$lib/server/database/schema.js";
-import s3 from "$lib/server/s3.js";
+import { s3 } from "$lib/server/s3.js";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { error, json } from "@sveltejs/kit";
 import { eq, inArray } from "drizzle-orm";

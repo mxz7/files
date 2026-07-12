@@ -4,7 +4,7 @@ import db from "$lib/server/database/db.js";
 import { uploads } from "$lib/server/database/schema.js";
 import { stripExif } from "$lib/server/exif.js";
 import { lucia } from "$lib/server/lucia.js";
-import s3 from "$lib/server/s3.js";
+import { s3 } from "$lib/server/s3.js";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { error, json } from "@sveltejs/kit";
 import dayjs from "dayjs";
