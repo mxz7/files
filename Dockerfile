@@ -46,6 +46,7 @@ COPY --from=build /app/build /app/build
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/package.json /app/package.json
 COPY --from=build /app/start-docker.sh /app/start-docker.sh
+COPY --from=build /app/drizzle.config.ts /app/drizzle.config.ts
 
 # Set production environment
 ENV NODE_ENV="production"
@@ -58,5 +59,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
+
+RUN chmod +x ./start-docker.sh
 
 ENTRYPOINT ["./start-docker.sh"]
