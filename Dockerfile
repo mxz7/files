@@ -59,4 +59,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
 
-CMD ["./start-docker.sh"]
+ENTRYPOINT ["./start-docker.sh"]
