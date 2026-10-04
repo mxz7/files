@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
-  import { invalidate } from "$app/navigation";
+  import { createInvite, getInvites } from "#lib/api/invites.remote.js";
   import dayjs from "dayjs";
   import { Copy } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import DeleteButton from "./DeleteButton.svelte";
 
-  let { data } = $props();
+  const data = $derived(await getInvites());
 
   let modal: HTMLDialogElement;
 
@@ -26,29 +25,24 @@
     <h3 class="text-center text-lg font-bold">Create new invite</h3>
 
     <form
-      method="post"
-      action="?/create"
-      class="form-control mt-4 gap-3"
-      use:enhance={() => {
-        return async ({ result }) => {
-          console.log(result);
+      {...createInvite.enhance(async (form) => {
+        if (await form.submit().updates(getInvites())) {
           modal.close();
-          invalidate("invites");
-
-          if (result.status !== 200) {
-            toast.error("failed to create label");
-          }
-        };
-      }}
+          form.element.reset();
+        }
+      })}
+      class="form-control mt-4 gap-3"
     >
       <input
-        type="text"
-        name="label"
+        {...createInvite.fields.label.as("text")}
         class="input input-bordered input-primary"
         placeholder="Label"
         required
       />
-      <button class="btn btn-success">Create</button>
+      {#each createInvite.fields.label.issues() ?? [] as issue (issue.message)}
+        <p class="text-error">{issue.message}</p>
+      {/each}
+      <button class="btn btn-success" disabled={!!createInvite.pending}>Create</button>
     </form>
   </div>
   <form method="dialog" class="modal-backdrop backdrop-blur-lg">
@@ -70,7 +64,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each data.invites as invite}
+      {#each data.invites as invite (invite.id)}
         <tr>
           <td>{invite.label}</td>
           <td>{dayjs(invite.createdAt).format("YYYY-MM-DD")}</td>

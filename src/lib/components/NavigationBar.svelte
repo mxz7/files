@@ -1,35 +1,35 @@
 <script>
-  import { auth, dashboard } from "$lib/stores";
+  import { page } from "$app/state";
+  import { getAuthedUser } from "#lib/api/auth.remote.js";
   import { AlignLeft, CircleUser } from "lucide-svelte";
+
+  const dashboard = $derived(page.route.id?.startsWith("/(dashboard)") ?? false);
+  const user = $derived(await getAuthedUser());
 </script>
 
 <header class="flex w-full justify-center">
   <div class="navbar bg-base-200 lg:mt-3 lg:max-w-6xl lg:rounded-xl">
     <div class="flex-1">
-      {#if $dashboard}
+      {#if dashboard}
         <label for="my-drawer" class="btn btn-ghost drawer-button text-primary lg:hidden">
           <AlignLeft strokeWidth={2.5} />
         </label>
         <a href="/" class="btn btn-ghost hidden text-xl font-semibold lg:inline-flex">
-          <span class="bg-gradient-to-r from-primary to-info bg-clip-text text-transparent">
+          <span class="from-primary to-info bg-gradient-to-r bg-clip-text text-transparent">
             files
           </span>
         </a>
       {:else}
         <a href="/" class="btn btn-ghost text-xl font-semibold">
-          <span class="bg-gradient-to-r from-primary to-info bg-clip-text text-transparent">
+          <span class="from-primary to-info bg-gradient-to-r bg-clip-text text-transparent">
             files
           </span>
         </a>
       {/if}
     </div>
     <div class="flex-none">
-      {#if !$auth}
-        <div class="btn btn-ghost">
-          <span class="loading loading-spinner loading-md"></span>
-        </div>
-      {:else if !$auth.authenticated}
-        <a href="/login" class="btn btn-ghost text-lg text-primary">Log in</a>
+      {#if !user}
+        <a href="/login" class="btn btn-ghost text-primary text-lg">Log in</a>
       {:else}
         <a href="/files" class="btn btn-ghost text-primary">
           <CircleUser strokeWidth={2.5} />

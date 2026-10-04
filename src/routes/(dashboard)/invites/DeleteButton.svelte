@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { invalidate } from "$app/navigation";
+  import { deleteInvite, getInvites } from "#lib/api/invites.remote.js";
+  import { toast } from "svelte-sonner";
   import { Trash } from "lucide-svelte";
 
   interface Props {
@@ -13,9 +14,13 @@
     if (loading) return;
     loading = true;
 
-    await fetch("api/deleteinvite", { method: "DELETE", body: JSON.stringify({ invite: id }) });
-
-    invalidate("invites");
+    try {
+      await deleteInvite(id).updates(getInvites());
+    } catch {
+      toast.error("Failed to delete invite");
+    } finally {
+      loading = false;
+    }
   }
 </script>
 

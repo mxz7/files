@@ -40,7 +40,10 @@ jobs:
         run: npx svelte-kit sync
 
       - name: check formatting
-        run: pnpm format --check
+        run: pnpm lint
+
+      - name: run tests
+        run: pnpm test
 
       - name: run pnpm check
         run: pnpm run check

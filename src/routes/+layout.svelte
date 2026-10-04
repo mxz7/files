@@ -1,7 +1,5 @@
 <script lang="ts">
-  import Navbar from "$lib/components/NavigationBar.svelte";
-  import { getLocalAuth } from "$lib/stores";
-  import { onMount } from "svelte";
+  import Navbar from "#lib/components/NavigationBar.svelte";
   import { Toaster } from "svelte-sonner";
   import "../app.css";
   interface Props {
@@ -9,10 +7,6 @@
   }
 
   let { children }: Props = $props();
-
-  onMount(() => {
-    getLocalAuth();
-  });
 </script>
 
 <Toaster

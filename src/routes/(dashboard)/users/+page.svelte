@@ -1,9 +1,12 @@
 <script lang="ts">
-  import Pages from "$lib/components/Pages.svelte";
-  import { formatBytes } from "$lib/format.js";
+  import { page } from "$app/state";
+  import { getUsers } from "#lib/api/users.remote.js";
+  import { parsePage } from "#lib/pagination.js";
+  import Pages from "#lib/components/Pages.svelte";
+  import { formatBytes } from "#lib/format.js";
   import dayjs from "dayjs";
 
-  let { data } = $props();
+  const data = $derived(await getUsers(parsePage(page.url.searchParams.get("page"))));
 </script>
 
 <svelte:head>
@@ -24,7 +27,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.rows as row}
+        {#each data.rows as row (row.id)}
           <tr>
             <th>
               <a href="/users/{row.id}" class="link">
@@ -46,6 +49,6 @@
         {/each}
       </tbody>
     </table>
-    <Pages currentPage={data.page} lastPage={data.page} route="/users" />
+    <Pages currentPage={data.page} lastPage={data.lastPage} route="/users" />
   </div>
 {/key}

@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { page } from "$app/stores";
-  import { auth } from "$lib/stores";
+  import { page } from "$app/state";
+  import { getAuthedUser, logout } from "#lib/api/auth.remote.js";
   import { Files, Gift, KeyRound, LogOut, ShieldCheck, Upload, UserSearch } from "lucide-svelte";
+
+  const user = $derived(await getAuthedUser());
 </script>
 
 <div class="drawer-side z-10 -mt-2 rounded-lg pt-2 lg:h-fit">
@@ -10,7 +12,7 @@
     <li>
       <a
         href="/files"
-        class="{$page.url.pathname === '/files'
+        class="{page.url.pathname === '/files'
           ? 'text-primary font-semibold'
           : ''} flex items-center"
       >
@@ -22,7 +24,7 @@
     <li>
       <a
         href="/upload"
-        class="{$page.url.pathname === '/upload'
+        class="{page.url.pathname === '/upload'
           ? 'text-primary font-semibold'
           : ''} flex items-center"
       >
@@ -34,7 +36,7 @@
     <li>
       <a
         href="/keys"
-        class="{$page.url.pathname === '/keys'
+        class="{page.url.pathname === '/keys'
           ? 'text-primary font-semibold'
           : ''} flex items-center"
       >
@@ -43,7 +45,7 @@
       </a>
     </li>
 
-    {#if $auth && $auth.authenticated && $auth.user.admin}
+    {#if user?.admin}
       <ul class="ml-2">
         <li>
           <h2 class="-ml-1 font-semibold">
@@ -55,7 +57,7 @@
         <li>
           <a
             href="/invites"
-            class="{$page.url.pathname.startsWith('/invites')
+            class="{page.url.pathname.startsWith('/invites')
               ? 'text-primary font-semibold'
               : ''} flex items-center"
           >
@@ -67,7 +69,7 @@
         <li>
           <a
             href="/users"
-            class="{$page.url.pathname.startsWith('/users')
+            class="{page.url.pathname.startsWith('/users')
               ? 'text-primary font-semibold'
               : ''} flex items-center"
           >
@@ -79,10 +81,12 @@
     {/if}
 
     <li>
-      <a href="/logout" class="flex items-center">
-        <LogOut size={16} strokeWidth={2.5} />
-        <span>log out</span>
-      </a>
+      <form {...logout}>
+        <button class="flex w-full items-center gap-2" disabled={!!logout.pending}>
+          <LogOut size={16} strokeWidth={2.5} />
+          <span>log out</span>
+        </button>
+      </form>
     </li>
   </ul>
 </div>

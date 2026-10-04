@@ -1,44 +1,38 @@
 <script lang="ts">
-  import { goto, invalidate } from "$app/navigation";
-  import { page } from "$app/stores";
-  import Pages from "$lib/components/Pages.svelte";
-  import { formatBytes } from "$lib/format.js";
-  import { debounce } from "$lib/utils";
+  import { goto } from "$app/navigation";
+  import { page } from "$app/state";
+  import { parsePage } from "#lib/pagination.js";
+  import Pages from "#lib/components/Pages.svelte";
+  import { formatBytes } from "#lib/format.js";
+  import { debounce } from "#lib/utils.js";
   import dayjs from "dayjs";
   import {
     ArrowDownNarrowWide,
     ArrowDownWideNarrow,
-    Copy,
     LoaderCircle,
     Pen,
     Search,
   } from "lucide-svelte";
-  import { toast } from "svelte-sonner";
-  import { superForm } from "sveltekit-superforms";
+  import { renameFile, getFiles } from "#lib/api/files.remote.js";
+  import CopyLinkMenu from "./CopyLinkMenu.svelte";
   import DeleteButton from "./DeleteButton.svelte";
 
-  let { data } = $props();
+  const filters = $derived({
+    page: parsePage(page.url.searchParams.get("page")),
+    search: (page.url.searchParams.get("search") ?? "").slice(0, 200),
+    order: (page.url.searchParams.get("order") ?? "datede").slice(0, 20),
+  });
+  const data = $derived(await getFiles(filters));
 
   let renameModal: HTMLDialogElement;
 
-  const { form, enhance, errors, constraints, delayed } = $derived(
-    superForm(data.form, {
-      delayMs: 50,
-      onResult(event) {
-        renameModal.close();
-        invalidate("file_uploads");
-      },
-      invalidateAll: false,
-    }),
-  );
-
   function updateSearch(value: string) {
-    const params = new URLSearchParams($page.url.searchParams);
+    const params = new URL(page.url.href).searchParams;
 
     if (value) params.set("search", value);
     else params.delete("search");
 
-    goto(`?${params.toString()}`, { replaceState: true });
+    goto(`?${params.toString()}`, { replace: true });
   }
 
   const updateSearchDebounced = debounce(updateSearch, 500);
@@ -50,44 +44,45 @@
 
 <dialog class="modal" bind:this={renameModal}>
   <div class="modal-box">
-    <h3 class="text-lg font-bold">Rename {$form.label || $form.id}</h3>
-    <form action="?/rename" method="POST" class="mt-2 flex flex-col gap-4" use:enhance>
+    <h3 class="text-lg font-bold">
+      Rename {renameFile.fields.label.value() || renameFile.fields.id.value()}
+    </h3>
+    <form
+      {...renameFile.enhance(async (form) => {
+        if (await form.submit().updates(getFiles(filters))) {
+          renameModal.close();
+        }
+      })}
+      class="mt-2 flex flex-col gap-4"
+    >
       <input
-        type="text"
-        name="id"
+        {...renameFile.fields.id.as("hidden", renameFile.fields.id.value() ?? "")}
         id="id"
         class="hidden"
-        bind:value={$form.id}
-        {...$constraints.id}
       />
-      {#if $errors.id}
-        <p class="text-error">{$errors.id}</p>
-      {/if}
+      {#each renameFile.fields.id.issues() ?? [] as issue (issue.message)}
+        <p class="text-error">{issue.message}</p>
+      {/each}
       <input
-        type="text"
-        name="label"
+        {...renameFile.fields.label.as("text")}
         id="label"
         class="input input-bordered input-primary w-full"
-        bind:value={$form.label}
-        {...$constraints.label}
       />
-      {#if $errors.label}
-        <p class="text-error">{$errors.label}</p>
-      {/if}
+      {#each renameFile.fields.label.issues() ?? [] as issue (issue.message)}
+        <p class="text-error">{issue.message}</p>
+      {/each}
 
       <label for="includeLabelInUrl" class="flex items-center gap-2">
         <input
-          type="checkbox"
+          {...renameFile.fields.includeLabelInUrl.as("checkbox")}
           class="checkbox checkbox-sm checkbox-primary"
-          name="includeLabelInUrl"
           id="includeLabelInUrl"
-          bind:checked={$form.includeLabelInUrl}
         />
         Include label in URL
       </label>
 
-      <button class="btn btn-primary {$delayed ? 'btn-disabled' : ''}">
-        {#if $delayed}
+      <button class="btn btn-primary" disabled={!!renameFile.pending}>
+        {#if renameFile.pending}
           <span class="animate-spin"><LoaderCircle /></span>
         {:else}
           Submit
@@ -123,7 +118,7 @@
           <button
             class="flex items-center gap-2"
             onclick={() => {
-              const params = new URLSearchParams($page.url.searchParams);
+              const params = new URL(page.url.href).searchParams;
 
               if (data.orderDisplay.column === "label") {
                 if (data.orderDisplay.direction === "asc") {
@@ -152,7 +147,7 @@
           <button
             class="flex items-center gap-2"
             onclick={() => {
-              const params = new URLSearchParams($page.url.searchParams);
+              const params = new URL(page.url.href).searchParams;
 
               if (data.orderDisplay.column === "size") {
                 if (data.orderDisplay.direction === "asc") {
@@ -181,7 +176,7 @@
           <button
             class="flex items-center gap-2"
             onclick={() => {
-              const params = new URLSearchParams($page.url.searchParams);
+              const params = new URL(page.url.href).searchParams;
 
               if (data.orderDisplay.column === "date") {
                 if (data.orderDisplay.direction === "asc") {
@@ -210,7 +205,7 @@
           <button
             class="flex items-center gap-2"
             onclick={() => {
-              const params = new URLSearchParams($page.url.searchParams);
+              const params = new URL(page.url.href).searchParams;
 
               if (data.orderDisplay.column === "expire") {
                 if (data.orderDisplay.direction === "asc") {
@@ -239,7 +234,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each data.files as file}
+      {#each data.files as file (file.id)}
         <tr>
           <td class="w-fit">
             <div class="flex w-full max-w-80 items-center gap-3">
@@ -283,24 +278,15 @@
             >
           </td>
           <td class="flex items-center gap-1">
-            <button
-              class="btn btn-ghost tooltip tooltip-top"
-              data-tip="Copy"
-              onclick={() => {
-                navigator.clipboard.writeText(`https://file.maxz.dev/${file.id}`);
-                toast.success("Copied to your clipboard");
-              }}
-            >
-              <Copy size={16} />
-            </button>
+            <CopyLinkMenu id={file.id} />
 
             <button
               class="btn btn-ghost tooltip tooltip-top"
               data-tip="rename"
               onclick={() => {
-                $form.id = file.id;
-                $form.label = file.label ?? "";
-                $form.includeLabelInUrl = file.id.includes("/");
+                renameFile.fields.id.set(file.id);
+                renameFile.fields.label.set(file.label ?? "");
+                renameFile.fields.includeLabelInUrl.set(file.id.includes("/"));
 
                 renameModal.showModal();
               }}
@@ -308,7 +294,7 @@
               <Pen size={16} strokeWidth={2.5} />
             </button>
 
-            <DeleteButton id={file.id} />
+            <DeleteButton id={file.id} onDeleted={() => getFiles(filters).refresh()} />
           </td>
         </tr>
       {/each}

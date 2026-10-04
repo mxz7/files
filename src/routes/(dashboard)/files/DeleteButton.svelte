@@ -1,25 +1,26 @@
 <script lang="ts">
-  import { invalidate } from "$app/navigation";
+  import { deleteFile } from "#lib/api/files.remote.js";
+  import { toast } from "svelte-sonner";
   import { Trash } from "lucide-svelte";
 
   interface Props {
     id: string;
+    onDeleted: () => Promise<unknown>;
   }
 
-  let { id }: Props = $props();
+  let { id, onDeleted }: Props = $props();
   let loading = $state(false);
   let modal = $state<HTMLDialogElement>();
 
   async function deleteImage() {
     modal!.close();
     loading = true;
-    const res = await fetch("/api/delete", {
-      method: "DELETE",
-      body: JSON.stringify({ id }),
-    });
-
-    if (res.status === 200) {
-      invalidate("file_uploads");
+    try {
+      await deleteFile(id);
+      await onDeleted();
+    } catch {
+      toast.error("Failed to delete file");
+    } finally {
       loading = false;
     }
   }

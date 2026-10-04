@@ -1,12 +1,12 @@
-import db from "$lib/server/database/db.js";
-import { invites, uploads, users } from "$lib/server/database/schema.js";
-import { s3 } from "$lib/server/s3.js";
+import db from "#lib/server/database/db.js";
+import { invites, uploads, users } from "#lib/server/database/schema.js";
+import { s3 } from "#lib/server/s3.js";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { error, json } from "@sveltejs/kit";
+import { error } from "@sveltejs/kit";
 import { eq, inArray } from "drizzle-orm";
 
 export async function DELETE({ locals, request }) {
-  const auth = await locals.validate(false);
+  const auth = await locals.validate();
 
   if (!auth.authenticated || !auth.user.admin) return error(401);
 
@@ -25,7 +25,7 @@ export async function DELETE({ locals, request }) {
   if (!inviteData.usedBy) {
     await db.delete(invites).where(eq(invites.id, inviteData.id));
 
-    return json({ ok: true });
+    return Response.json({ ok: true });
   }
 
   const userUploads = await db
@@ -49,5 +49,5 @@ export async function DELETE({ locals, request }) {
   await db.delete(invites).where(eq(invites.id, inviteData.id));
   await db.delete(users).where(eq(users.id, inviteData.usedBy));
 
-  return json({ ok: true });
+  return Response.json({ ok: true });
 }

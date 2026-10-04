@@ -1,18 +1,8 @@
 <script lang="ts">
-  import { getLocalAuth } from "$lib/stores.js";
+  import { requireGuest } from "#lib/api/auth.remote.js";
+  import { login } from "#lib/api/auth.remote.js";
   import { KeyRound, User } from "lucide-svelte";
-  import { superForm } from "sveltekit-superforms";
-
-  let { data } = $props();
-
-  const { form, errors, enhance, constraints, delayed } = $derived(
-    superForm(data.form, {
-      delayMs: 100,
-      onResult(event) {
-        getLocalAuth();
-      },
-    }),
-  );
+  await requireGuest();
 </script>
 
 <div class="mt-14 flex w-full justify-center">
@@ -22,51 +12,42 @@
       Or <a href="/signup" class="underline">sign up</a>
     </p>
 
-    <form action="?/login" method="post" class="form-control mt-4" use:enhance>
+    <form {...login} class="form-control mt-4">
       <label
         for="username"
-        class="input input-bordered mt-4 flex items-center gap-2 {$delayed ? 'input-disabled' : ''}"
+        class="input input-bordered mt-4 flex items-center gap-2 {login.pending
+          ? 'input-disabled'
+          : ''}"
       >
         <User opacity={70} />
-        <input
-          type="text"
-          name="username"
-          id="username"
-          placeholder="Username"
-          bind:value={$form.username}
-          {...$constraints.username}
-        />
+        <input {...login.fields.username.as("text")} id="username" placeholder="Username" />
       </label>
 
-      {#if Array.isArray($errors.username)}
-        <span class="text-error mt-1">{$errors.username[0]}</span>
-      {/if}
+      {#each login.fields.username.issues() ?? [] as issue (issue.message)}
+        <span class="text-error mt-1">{issue.message}</span>
+      {/each}
 
       <label
         for="password"
-        class="input input-bordered mt-4 flex items-center gap-2 {$delayed ? 'input-disabled' : ''}"
+        class="input input-bordered mt-4 flex items-center gap-2 {login.pending
+          ? 'input-disabled'
+          : ''}"
       >
         <KeyRound opacity={70} />
-        <input
-          type="password"
-          name="password"
-          id="password"
-          placeholder="Password"
-          bind:value={$form.password}
-          {...$constraints.password}
-        />
+        <input {...login.fields._password.as("password")} id="password" placeholder="Password" />
       </label>
 
-      {#if Array.isArray($errors.password)}
-        <span class="text-error mt-1">{$errors.password[0]}</span>
-      {/if}
+      {#each login.fields._password.issues() ?? [] as issue (issue.message)}
+        <span class="text-error mt-1">{issue.message}</span>
+      {/each}
 
       <button
-        class="btn btn-primary mt-4 flex items-center gap-2 text-lg {$delayed
+        disabled={!!login.pending}
+        class="btn btn-primary mt-4 flex items-center gap-2 text-lg {login.pending
           ? 'btn-disabled'
           : ''}"
       >
-        {#if $delayed}
+        {#if login.pending}
           <span class="loading loading-spinner"></span>
         {/if}
         <span>Log in</span>

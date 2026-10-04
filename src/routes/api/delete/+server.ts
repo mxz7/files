@@ -1,12 +1,12 @@
-import db from "$lib/server/database/db.js";
-import { uploads } from "$lib/server/database/schema.js";
-import { s3 } from "$lib/server/s3.js";
+import db from "#lib/server/database/db.js";
+import { uploads } from "#lib/server/database/schema.js";
+import { s3 } from "#lib/server/s3.js";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 
 export async function DELETE({ locals, request }) {
-  const auth = await locals.validate(false);
+  const auth = await locals.validate();
 
   if (!auth.authenticated) return error(403);
 
