@@ -155,6 +155,34 @@ describe("presigned upload flow", () => {
     },
   );
 
+  it("uses short nanoid slugs through staging and finalization", async () => {
+    const created = await prepare(Buffer.from("hello"));
+    const grant = readUploadGrant(created.grant, "one");
+
+    expect(grant.id).toMatch(/^[0-9A-Za-z_]{10}$/);
+    expect(objects.has(`_pending/${grant.id}`)).toBe(true);
+
+    const result = await run<{ id: string }>(finalizeUpload, created.grant);
+
+    expect(result.id).toBe(`${grant.id}/file.txt`);
+    expect(objects.has(result.id)).toBe(true);
+    expect(objects.has(`_pending/${grant.id}`)).toBe(false);
+  });
+
+  it("continues accepting signed UUID grants for in-progress uploads", async () => {
+    const created = await prepare(Buffer.from("hello"));
+    const grant = readUploadGrant(created.grant, "one");
+    const legacyId = "3241a9b8-15a1-41cc-89ae-b1005b51f097";
+    const object = objects.get(`_pending/${grant.id}`)!;
+
+    objects.set(`_pending/${legacyId}`, object);
+
+    const token = createUploadGrant({ ...grant, id: legacyId });
+    const result = await run<{ id: string }>(finalizeUpload, token);
+
+    expect(result.id).toBe(`${legacyId}/file.txt`);
+  });
+
   it("accepts bearer keys without extending their expiry", async () => {
     mocks.validate.mockResolvedValue({ authenticated: false });
     mocks.authorization = "Bearer raw-api-token";

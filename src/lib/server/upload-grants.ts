@@ -4,7 +4,8 @@ import { z } from "zod";
 import { error } from "@sveltejs/kit";
 
 const grantSchema = z.object({
-  id: z.string().uuid(),
+  // Accept existing UUID grants until any in-progress uploads finish.
+  id: z.union([z.string().regex(/^[0-9A-Za-z_]{10}$/), z.string().uuid()]),
   userId: z.string().min(1),
   label: z.string().min(1).max(50),
   fileName: z.string().max(255),

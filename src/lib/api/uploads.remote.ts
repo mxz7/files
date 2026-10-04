@@ -1,6 +1,6 @@
 import { command, getRequestEvent } from "$app/server";
 import { S3_BUCKET } from "$app/env/private";
-import { randomUUID } from "node:crypto";
+import { nanoid } from "#lib/nanoid.js";
 import { z } from "zod";
 import { error, isHttpError } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
@@ -126,7 +126,7 @@ export const createUpload = command(uploadSchema, async (data) => {
 
   const grant: UploadGrant = {
     ...data,
-    id: randomUUID(),
+    id: nanoid(),
     userId: user.id,
     label: data.fileName.slice(0, 50),
     expiresAt: Date.now() + 15 * 60 * 1000,
