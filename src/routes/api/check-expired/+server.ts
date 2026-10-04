@@ -3,11 +3,11 @@ import db from "#lib/server/database/db.js";
 import { sessions, uploads } from "#lib/server/database/schema.js";
 import { s3 } from "#lib/server/s3.js";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { error, json } from "@sveltejs/kit";
+import { error } from "@sveltejs/kit";
 import dayjs from "dayjs";
 import { eq, lte } from "drizzle-orm";
 
-export async function GET({ request }) {
+export async function GET({ request, locals }) {
   if (request.headers.get("Authorization") !== `Bearer ${CRON_SECRET}`) return error(401);
 
   const expired = await db
@@ -15,16 +15,14 @@ export async function GET({ request }) {
     .from(uploads)
     .where(lte(uploads.expireAt, new Date()));
 
-  console.log(expired);
-
   for (const expiredItem of expired) {
     await s3.send(new DeleteObjectCommand({ Bucket: "maxz-dev", Key: expiredItem.id }));
     await db.delete(uploads).where(eq(uploads.id, expiredItem.id));
   }
 
-  console.log(`deleted ${expired.length} expired uploads`);
+  locals.logger.info({ deleted_count: expired.length }, "Deleted expired uploads");
 
   await db.delete(sessions).where(lte(sessions.expiresAt, dayjs().unix()));
 
-  return json({ success: true });
+  return Response.json({ success: true });
 }

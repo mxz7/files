@@ -1,6 +1,29 @@
 import { lucia } from "#lib/server/lucia.js";
+import { baseLogger, logError, logRequest } from "#lib/server/logger.js";
+import type { Handle, HandleServerError } from "@sveltejs/kit/hooks";
 
-export const handle = async ({ event, resolve }) => {
+export const handleError: HandleServerError = ({ event, error, kind, issues }) => {
+  const requestId = event.locals.logger?.bindings().requestId;
+  if (kind !== "unknown") {
+    event.locals.error = error.message;
+    event.locals.errorId = kind === "app" ? error.errorId : undefined;
+    event.locals.errorStackTrace = undefined;
+    logError(error.status, kind, event, kind === "validation" ? issues.length : undefined);
+    return { ...error, requestId };
+  }
+
+  const errorId = crypto.randomUUID();
+  event.locals.error = String(error);
+  event.locals.errorId = errorId;
+  event.locals.errorStackTrace = error instanceof Error ? error.stack : undefined;
+  logError(500, kind, event);
+
+  return { message: "An unexpected error occurred", errorId, requestId };
+};
+
+export const handle: Handle = async ({ event, resolve }) => {
+  event.locals.startTimer = performance.now();
+  event.locals.logger = baseLogger.child({ requestId: crypto.randomUUID() });
   // if (!dev && !event.isSubRequest && event.url.pathname.startsWith("/api")) {
   //   const rateLimitAttempt = await rateLimiter.limit(event.getClientAddress()).catch(() => {
   //     return { success: true, reset: 69 };
@@ -34,6 +57,7 @@ export const handle = async ({ event, resolve }) => {
 
       if (!user || !session) return { authenticated: false };
 
+      event.locals.authedUser = user;
       return { user, session, authenticated: true };
     } else {
       const sessionId = event.cookies.get(lucia.sessionCookieName);
@@ -62,6 +86,7 @@ export const handle = async ({ event, resolve }) => {
       if (!user || !session) {
         return { authenticated: false };
       }
+      event.locals.authedUser = user;
       return { user, session, authenticated: true };
     }
   };
@@ -77,6 +102,8 @@ export const handle = async ({ event, resolve }) => {
   } catch {
     // do nothing lol
   }
+
+  logRequest(res.status, event);
 
   return res;
 };

@@ -20,7 +20,7 @@
   message.subscribe((value) => {
     if (value === "ok") {
       toast.success("Logged in");
-      goto("/files", { invalidateAll: true });
+      goto("/files", { refreshAll: true });
       getLocalAuth();
     }
   });

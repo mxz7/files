@@ -6,7 +6,7 @@ import { stripExif } from "#lib/server/exif.js";
 import { lucia } from "#lib/server/lucia.js";
 import { s3 } from "#lib/server/s3.js";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { error, json } from "@sveltejs/kit";
+import { error } from "@sveltejs/kit";
 import dayjs from "dayjs";
 import { z } from "zod";
 
@@ -77,24 +77,26 @@ export async function POST({ locals, getClientAddress, request }) {
     }
   }
 
-  if (!auth.authenticated) return error(401, { message: "Unauthorized" });
+  if (!auth.authenticated) return error(401, "Unauthorized");
+
+  locals.authedUser = auth.user;
 
   let formData;
   try {
     formData = await request.formData();
   } catch {
-    return error(400, { message: "Invalid form data" });
+    return error(400, "Invalid form data");
   }
 
   const data = schema.safeParse(Object.fromEntries(formData.entries()));
 
   if (!data.success) {
-    return error(400, { message: JSON.stringify(data.error.format()) });
+    return error(400, JSON.stringify(data.error.format()));
   }
 
   const { file, expire, label, anonymize } = data.data;
 
-  if (file.size > 1000000000) return error(400, { message: "File too large" });
+  if (file.size > 1000000000) return error(400, "File too large");
   if (expire > 31556952000 && !auth.user.admin) return error(400);
 
   let id = nanoid();
@@ -102,9 +104,9 @@ export async function POST({ locals, getClientAddress, request }) {
   let buffer: Buffer;
 
   if (exifTypes.includes(file.type)) {
-    const exif = await stripExif(file, id);
+    const exif = await stripExif(file, id, locals.logger);
 
-    if (!exif.success) return error(500, { message: "Failed to strip exif data" });
+    if (!exif.success) return error(500, "Failed to strip exif data");
 
     buffer = exif.file;
   } else {
@@ -161,5 +163,5 @@ export async function POST({ locals, getClientAddress, request }) {
     bytes: buffer.byteLength,
   });
 
-  return json({ id: key });
+  return Response.json({ id: key });
 }

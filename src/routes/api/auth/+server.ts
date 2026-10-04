@@ -1,10 +1,9 @@
 import { lucia } from "#lib/server/lucia.js";
-import { json } from "@sveltejs/kit";
 
-export async function GET({ cookies }) {
+export async function GET({ cookies, locals }) {
   const sessionId = cookies.get(lucia.sessionCookieName);
   if (!sessionId) {
-    return json({ authenticated: false });
+    return Response.json({ authenticated: false });
   }
 
   const { session, user } = await lucia.validateSession(sessionId);
@@ -26,7 +25,8 @@ export async function GET({ cookies }) {
   }
 
   if (!user || !session) {
-    return json({ authenticated: false });
+    return Response.json({ authenticated: false });
   }
-  return json({ authenticated: true, user, session });
+  locals.authedUser = user;
+  return Response.json({ authenticated: true, user, session });
 }

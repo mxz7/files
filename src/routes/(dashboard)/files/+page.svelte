@@ -33,12 +33,12 @@
   );
 
   function updateSearch(value: string) {
-    const params = new URLSearchParams(page.url.searchParams);
+    const params = new URL(page.url.href).searchParams;
 
     if (value) params.set("search", value);
     else params.delete("search");
 
-    goto(`?${params.toString()}`, { replaceState: true });
+    goto(`?${params.toString()}`, { replace: true });
   }
 
   const updateSearchDebounced = debounce(updateSearch, 500);
@@ -123,7 +123,7 @@
           <button
             class="flex items-center gap-2"
             onclick={() => {
-              const params = new URLSearchParams(page.url.searchParams);
+              const params = new URL(page.url.href).searchParams;
 
               if (data.orderDisplay.column === "label") {
                 if (data.orderDisplay.direction === "asc") {
@@ -152,7 +152,7 @@
           <button
             class="flex items-center gap-2"
             onclick={() => {
-              const params = new URLSearchParams(page.url.searchParams);
+              const params = new URL(page.url.href).searchParams;
 
               if (data.orderDisplay.column === "size") {
                 if (data.orderDisplay.direction === "asc") {
@@ -181,7 +181,7 @@
           <button
             class="flex items-center gap-2"
             onclick={() => {
-              const params = new URLSearchParams(page.url.searchParams);
+              const params = new URL(page.url.href).searchParams;
 
               if (data.orderDisplay.column === "date") {
                 if (data.orderDisplay.direction === "asc") {
@@ -210,7 +210,7 @@
           <button
             class="flex items-center gap-2"
             onclick={() => {
-              const params = new URLSearchParams(page.url.searchParams);
+              const params = new URL(page.url.href).searchParams;
 
               if (data.orderDisplay.column === "expire") {
                 if (data.orderDisplay.direction === "asc") {
