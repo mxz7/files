@@ -14,10 +14,31 @@ The production origin is `https://files.maxz.dev`, configured with `paths.origin
 in `vite.config.ts`. Development uses the request origin. Adapter-node no longer
 uses the `ORIGIN` environment variable.
 
-Forms use SvelteKit remote functions in `src/lib/api/*.remote.ts`, with Zod
+Page data and forms use SvelteKit remote functions in `src/lib/api/*.remote.ts`, with Zod
 validation and authorization in each handler. Login and signup also work without
 JavaScript. Sensitive form fields use an underscore prefix to avoid echoing them
 back after failed submissions.
+
+## Uploads
+
+Uploads use `src/lib/api/uploads.remote.ts`: create a signed upload grant, PUT the
+file directly to the presigned S3 URL, then finalize it. Grants expire after 15
+minutes and bind the upload to its user, content type, byte length, and expiry.
+Finalization checks the object and publishes it only after processing. Upload
+commands accept session cookies or bearer session keys. The old `/api/upload`
+endpoint has been removed.
+
+Supported raster images follow HRCT's gallery processing: Sharp verifies the
+format, applies EXIF orientation, and re-encodes to WebP without metadata. Original
+dimensions are preserved. Images are limited to 50 MB and 50 million decoded
+pixels; animated and multipage images are rejected. Other files retain the 1 GB
+limit, and supported videos retain EXIFTool metadata stripping.
+
+The bucket must allow browser CORS requests from `https://files.maxz.dev` with
+method `PUT` and header `Content-Type` (also allow the local development origin
+when testing). Staging objects use the `_pending/` prefix. Block public access to
+that prefix and configure a one-day lifecycle expiration to remove abandoned
+uploads. Completed and failed uploads are cleaned up by the app.
 
 ## Authentication
 
@@ -44,6 +65,6 @@ Optionally set `LOKI_TENANT_ID` for Loki's `X-Scope-OrgID` header (for example,
 ## Checks
 
 - `pnpm check` — Svelte and TypeScript checks
-- `pnpm test` — logging, environment validation, session security, and remote form authorization tests
+- `pnpm test` — logging, environment validation, session security, remote queries, uploads, and remote form authorization tests
 - `pnpm lint` — formatting checks
 - `pnpm build` — production build
