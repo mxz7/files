@@ -1,8 +1,9 @@
 <script>
   import { dashboard } from "#lib/stores.js";
   import { getAuthedUser } from "#lib/api/auth.remote.js";
-  const user = $derived(await getAuthedUser());
   import { AlignLeft, CircleUser } from "lucide-svelte";
+
+  const user = $derived(await getAuthedUser());
 </script>
 
 <header class="flex w-full justify-center">

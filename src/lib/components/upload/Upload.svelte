@@ -1,7 +1,6 @@
 <script lang="ts">
   import { browser } from "$app/env";
   import { getAuthedUser } from "#lib/api/auth.remote.js";
-  const user = $derived(await getAuthedUser());
   import type { FileData } from "#lib/types/file.js";
   import { CloudUpload, Copy } from "lucide-svelte";
   import { nanoid } from "nanoid/non-secure";
@@ -11,6 +10,8 @@
   import { tweened } from "svelte/motion";
   import { writable } from "svelte/store";
   import FileStatus from "./FileStatus.svelte";
+
+  const user = $derived(await getAuthedUser());
 
   interface Preferences {
     expireIn: number;

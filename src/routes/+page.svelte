@@ -1,6 +1,7 @@
 <script>
   import Upload from "#lib/components/upload/Upload.svelte";
   import { getAuthedUser } from "#lib/api/auth.remote.js";
+
   const user = $derived(await getAuthedUser());
 </script>
 

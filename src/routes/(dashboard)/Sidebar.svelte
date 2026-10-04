@@ -1,8 +1,9 @@
 <script lang="ts">
   import { page } from "$app/state";
   import { getAuthedUser, logout } from "#lib/api/auth.remote.js";
-  const user = $derived(await getAuthedUser());
   import { Files, Gift, KeyRound, LogOut, ShieldCheck, Upload, UserSearch } from "lucide-svelte";
+
+  const user = $derived(await getAuthedUser());
 </script>
 
 <div class="drawer-side z-10 -mt-2 rounded-lg pt-2 lg:h-fit">
