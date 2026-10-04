@@ -3,7 +3,7 @@ import { nanoid } from "#lib/nanoid.js";
 import db from "#lib/server/database/db.js";
 import { uploads } from "#lib/server/database/schema.js";
 import { stripExif } from "#lib/server/exif.js";
-import { lucia } from "#lib/server/lucia.js";
+import { validateSession } from "#lib/server/auth/session.js";
 import { s3 } from "#lib/server/s3.js";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { error } from "@sveltejs/kit";
@@ -60,15 +60,15 @@ const schema = z.object({
 });
 
 export async function POST({ locals, getClientAddress, request }) {
-  let auth = await locals.validate(false);
+  let auth = await locals.validate();
 
   if (!auth.authenticated && request.headers.get("authorization")) {
-    const bearer = lucia.readBearerToken(request.headers.get("authorization")!);
+    const bearer = request.headers.get("authorization")?.match(/^Bearer\s+(\S+)$/i)?.[1];
 
     if (bearer) {
-      const bearerAuth = await lucia.validateSession(bearer);
+      const bearerAuth = await validateSession(bearer, { refresh: false });
 
-      if (bearerAuth.user) {
+      if (bearerAuth) {
         auth = {
           authenticated: true,
           ...bearerAuth,

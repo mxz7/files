@@ -1,5 +1,7 @@
 <script>
-  import { auth, dashboard } from "#lib/stores.js";
+  import { dashboard } from "#lib/stores.js";
+  import { getAuthedUser } from "#lib/api/auth.remote.js";
+  const user = $derived(await getAuthedUser());
   import { AlignLeft, CircleUser } from "lucide-svelte";
 </script>
 
@@ -24,11 +26,7 @@
       {/if}
     </div>
     <div class="flex-none">
-      {#if !$auth}
-        <div class="btn btn-ghost">
-          <span class="loading loading-spinner loading-md"></span>
-        </div>
-      {:else if !$auth.authenticated}
+      {#if !user}
         <a href="/login" class="btn btn-ghost text-primary text-lg">Log in</a>
       {:else}
         <a href="/files" class="btn btn-ghost text-primary">

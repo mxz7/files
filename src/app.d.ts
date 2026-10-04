@@ -1,7 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import type { Authed, Unauthed } from "#lib/types/auth.js";
-import type { User } from "lucia";
+import type { Authed, Unauthed, User } from "#lib/types/auth.js";
 import type { Logger } from "pino";
 
 // for information about these interfaces
@@ -12,7 +11,8 @@ declare global {
       errorId?: string;
     }
     interface Locals {
-      validate: (useApi = true) => Promise<Authed | Unauthed>;
+      validate: () => Promise<Authed | Unauthed>;
+      auth: Authed | Unauthed;
       startTimer: number;
       logger: Logger;
       authedUser?: User;

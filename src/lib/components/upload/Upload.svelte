@@ -1,6 +1,7 @@
 <script lang="ts">
   import { browser } from "$app/env";
-  import { auth } from "#lib/stores.js";
+  import { getAuthedUser } from "#lib/api/auth.remote.js";
+  const user = $derived(await getAuthedUser());
   import type { FileData } from "#lib/types/file.js";
   import { CloudUpload, Copy } from "lucide-svelte";
   import { nanoid } from "nanoid/non-secure";
@@ -197,7 +198,7 @@
       value={31556952000}
       bind:group={expireIn}
     />
-    {#if $auth?.authenticated && $auth?.user.admin}
+    {#if user?.admin}
       <input
         type="radio"
         name="expire"

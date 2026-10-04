@@ -1,6 +1,5 @@
 <script lang="ts">
   import { signup } from "#lib/api/auth.remote.js";
-  import { getLocalAuth } from "#lib/stores.js";
   import { KeyRound, ShieldAlert, User } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 </script>
@@ -15,7 +14,6 @@
     <form
       {...signup.enhance(async (form) => {
         if (await form.submit()) {
-          await getLocalAuth();
           toast.success("Logged in");
         }
       })}

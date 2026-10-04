@@ -19,6 +19,15 @@ validation and authorization in each handler. Login and signup also work without
 JavaScript. Sensitive form fields use an underscore prefix to avoid echoing them
 back after failed submissions.
 
+## Authentication
+
+Authentication follows the session helpers in `~/dev/hrct`, without Lucia.
+Sessions use random 160-bit tokens and store only their SHA-256 hashes. Browser
+sessions expire after 30 days and renew in their final 15 days; bearer keys retain
+the expiry selected when created. Cookies are HttpOnly, SameSite=Lax, and Secure
+in production. Existing Lucia tokens upgrade to hashed storage when used, with no
+database migration required. Public user data excludes password hashes.
+
 ## Logging
 
 Production requests and errors produce structured Pino logs with a request ID,
@@ -35,6 +44,6 @@ Optionally set `LOKI_TENANT_ID` for Loki's `X-Scope-OrgID` header (for example,
 ## Checks
 
 - `pnpm check` — Svelte and TypeScript checks
-- `pnpm test` — logging, environment validation, and remote form authorization tests
+- `pnpm test` — logging, environment validation, session security, and remote form authorization tests
 - `pnpm lint` — formatting checks
 - `pnpm build` — production build

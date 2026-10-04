@@ -1,17 +1,28 @@
-import { form, getRequestEvent } from "$app/server";
+import { form, getRequestEvent, query } from "$app/server";
 import { loginSchema, signupSchema } from "#lib/schema/auth.js";
 import { nanoid } from "#lib/nanoid.js";
 import db from "#lib/server/database/db.js";
 import { invites, users } from "#lib/server/database/schema.js";
-import { lucia } from "#lib/server/lucia.js";
+import {
+  createSession,
+  deleteSessionCookie,
+  generateSessionToken,
+  invalidateSession,
+  setSessionCookie,
+} from "#lib/server/auth/session.js";
 import { hash, verify } from "@node-rs/argon2";
 import { invalid, redirect } from "@sveltejs/kit";
 import { and, eq, isNull } from "drizzle-orm";
 
 export const login = form(loginSchema, async (data, issue) => {
-  const { cookies } = getRequestEvent();
+  const { cookies, locals } = getRequestEvent();
   const user = await db
-    .select({ userId: users.id, password: users.password })
+    .select({
+      userId: users.id,
+      password: users.password,
+      username: users.username,
+      admin: users.admin,
+    })
     .from(users)
     .where(eq(users.username, data.username))
     .then((r) => r[0]);
@@ -31,18 +42,18 @@ export const login = form(loginSchema, async (data, issue) => {
     invalid(issue._password("Invalid credentials."));
   }
 
-  const session = await lucia.createSession(user.userId, {});
-  const sessionCookie = lucia.createSessionCookie(session.id);
-  cookies.set(sessionCookie.name, sessionCookie.value, {
-    path: ".",
-    ...sessionCookie.attributes,
-  });
+  const token = generateSessionToken();
+  const session = await createSession(token, user.userId);
+  setSessionCookie(cookies, token, new Date(session.expiresAt * 1000));
+  locals.authedUser = { id: user.userId, username: user.username, admin: !!user.admin };
+  locals.auth = { authenticated: true, session, user: locals.authedUser };
+  getAuthedUser().set(locals.authedUser);
 
   redirect(303, "/files");
 });
 
 export const signup = form(signupSchema, async (data, issue) => {
-  const { cookies } = getRequestEvent();
+  const { cookies, locals } = getRequestEvent();
   const inviteCheck = await db
     .select({ id: invites.id })
     .from(invites)
@@ -82,12 +93,28 @@ export const signup = form(signupSchema, async (data, issue) => {
 
   await db.update(invites).set({ usedBy: userId }).where(eq(invites.id, data._invite));
 
-  const session = await lucia.createSession(userId, {});
-  const sessionCookie = lucia.createSessionCookie(session.id);
-  cookies.set(sessionCookie.name, sessionCookie.value, {
-    path: ".",
-    ...sessionCookie.attributes,
-  });
+  const token = generateSessionToken();
+  const session = await createSession(token, userId);
+  setSessionCookie(cookies, token, new Date(session.expiresAt * 1000));
+  locals.authedUser = { id: userId, username: data.username, admin: false };
+  locals.auth = { authenticated: true, session, user: locals.authedUser };
+  getAuthedUser().set(locals.authedUser);
 
   redirect(303, "/files");
+});
+
+export const getAuthedUser = query(async () => {
+  const auth = await getRequestEvent().locals.validate();
+  return auth.authenticated ? auth.user : null;
+});
+
+export const logout = form(async () => {
+  const { locals, cookies } = getRequestEvent();
+  const auth = await locals.validate();
+  if (auth.authenticated) await invalidateSession(auth.session.id);
+  deleteSessionCookie(cookies);
+  locals.auth = { authenticated: false };
+  locals.authedUser = undefined;
+  getAuthedUser().set(null);
+  redirect(303, "/");
 });

@@ -1,7 +1,6 @@
 <script lang="ts">
   import dayjs from "dayjs";
   import { createKey, deleteKeys } from "#lib/api/keys.remote.js";
-  import { getLocalAuth } from "#lib/stores.js";
 
   let { data } = $props();
 
@@ -48,11 +47,7 @@
 <div class="flex justify-end gap-2">
   <button class="btn btn-success btn-sm" onclick={() => createModal.showModal()}>create</button>
 
-  <form
-    {...deleteKeys.enhance(async (form) => {
-      if (await form.submit()) await getLocalAuth();
-    })}
-  >
+  <form {...deleteKeys}>
     <button class="btn btn-error btn-sm" disabled={!!deleteKeys.pending}>delete all</button>
   </form>
 </div>

@@ -17,10 +17,12 @@ const mocks = vi.hoisted(() => {
     send: vi.fn(),
     verify: vi.fn(),
     hash: vi.fn(),
-    lucia: {
+    sessions: {
       createSession: vi.fn(),
-      createSessionCookie: vi.fn(),
-      createBlankSessionCookie: vi.fn(),
+      setSessionCookie: vi.fn(),
+      generateSessionToken: vi.fn(() => "raw-token"),
+      invalidateSession: vi.fn(),
+      deleteSessionCookie: vi.fn(),
       invalidateUserSessions: vi.fn(),
     },
   };
@@ -30,11 +32,15 @@ vi.mock("$app/server", () => ({
   // Exercise handler logic without invoking SvelteKit's request dispatcher.
   form: (schemaOrHandler: object, handler?: object) =>
     Object.assign(handler ?? schemaOrHandler, { __: { type: "form" } }),
+  query: (handler: () => unknown) =>
+    Object.assign(() => Object.assign(Promise.resolve(handler()), { set: vi.fn() }), {
+      __: { type: "query" },
+    }),
   getRequestEvent: () => ({ locals: { validate: mocks.validate }, cookies: mocks.cookies }),
 }));
 vi.mock("$app/env/private", () => ({ S3_BUCKET: "test" }));
 vi.mock("#lib/server/database/db.js", () => ({ default: mocks.db }));
-vi.mock("#lib/server/lucia.js", () => ({ lucia: mocks.lucia }));
+vi.mock("#lib/server/auth/session.js", () => mocks.sessions);
 vi.mock("#lib/server/s3.js", () => ({ s3: { send: mocks.send } }));
 vi.mock("@node-rs/argon2", () => ({ hash: mocks.hash, verify: mocks.verify }));
 
@@ -67,17 +73,7 @@ beforeEach(() => {
     };
     return chain;
   });
-  mocks.lucia.createSession.mockResolvedValue({ id: "new-session" });
-  mocks.lucia.createSessionCookie.mockReturnValue({
-    name: "auth_session",
-    value: "new-session",
-    attributes: { path: "/" },
-  });
-  mocks.lucia.createBlankSessionCookie.mockReturnValue({
-    name: "auth_session",
-    value: "",
-    attributes: { path: "/", maxAge: 0 },
-  });
+  mocks.sessions.createSession.mockResolvedValue({ id: "hashed-session", expiresAt: 2000000000 });
 });
 
 describe("remote mutation authorization", () => {
@@ -90,8 +86,8 @@ describe("remote mutation authorization", () => {
     await expect(run(remote, data)).rejects.toMatchObject({ status: 401 });
     expect(mocks.db.insert).not.toHaveBeenCalled();
     expect(mocks.db.update).not.toHaveBeenCalled();
-    expect(mocks.lucia.createSession).not.toHaveBeenCalled();
-    expect(mocks.lucia.invalidateUserSessions).not.toHaveBeenCalled();
+    expect(mocks.sessions.createSession).not.toHaveBeenCalled();
+    expect(mocks.sessions.invalidateUserSessions).not.toHaveBeenCalled();
     expect(mocks.send).not.toHaveBeenCalled();
   });
 
@@ -114,8 +110,8 @@ describe("remote mutation authorization", () => {
   it("revokes the current user's sessions and expires their cookie", async () => {
     mocks.validate.mockResolvedValue({ authenticated: true, user: { id: "user-1" } });
     await expect(run(deleteKeys)).rejects.toMatchObject({ status: 303, location: "/" });
-    expect(mocks.lucia.invalidateUserSessions).toHaveBeenCalledWith("user-1");
-    expect(mocks.cookies.set).toHaveBeenCalledWith("auth_session", "", { path: "/", maxAge: 0 });
+    expect(mocks.sessions.invalidateUserSessions).toHaveBeenCalledWith("user-1");
+    expect(mocks.sessions.deleteSessionCookie).toHaveBeenCalledWith(mocks.cookies);
   });
 });
 
@@ -126,7 +122,7 @@ describe("remote authentication", () => {
     await expect(run(login, { username: "user", _password: "incorrect" })).rejects.toMatchObject({
       issues: [{ path: ["_password"], message: "Invalid credentials." }],
     });
-    expect(mocks.lucia.createSession).not.toHaveBeenCalled();
+    expect(mocks.sessions.createSession).not.toHaveBeenCalled();
   });
 
   it("sets a session cookie and redirects after a valid login", async () => {
@@ -136,8 +132,12 @@ describe("remote authentication", () => {
       status: 303,
       location: "/files",
     });
-    expect(mocks.lucia.createSession).toHaveBeenCalledWith("user-1", {});
-    expect(mocks.cookies.set).toHaveBeenCalledWith("auth_session", "new-session", { path: "/" });
+    expect(mocks.sessions.createSession).toHaveBeenCalledWith("raw-token", "user-1");
+    expect(mocks.sessions.setSessionCookie).toHaveBeenCalledWith(
+      mocks.cookies,
+      "raw-token",
+      new Date(2000000000000),
+    );
   });
 
   it("rejects invalid or consumed invites before creating a user", async () => {

@@ -6,7 +6,7 @@ import { error } from "@sveltejs/kit";
 import { eq, inArray } from "drizzle-orm";
 
 export async function DELETE({ locals, request }) {
-  const auth = await locals.validate(false);
+  const auth = await locals.validate();
 
   if (!auth.authenticated || !auth.user.admin) return error(401);
 

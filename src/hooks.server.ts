@@ -1,4 +1,9 @@
-import { lucia } from "#lib/server/lucia.js";
+import {
+  deleteSessionCookie,
+  getSessionCookie,
+  setSessionCookie,
+  validateSession,
+} from "#lib/server/auth/session.js";
 import { baseLogger, logError, logRequest } from "#lib/server/logger.js";
 import type { Handle, HandleServerError } from "@sveltejs/kit/hooks";
 
@@ -24,72 +29,19 @@ export const handleError: HandleServerError = ({ event, error, kind, issues }) =
 export const handle: Handle = async ({ event, resolve }) => {
   event.locals.startTimer = performance.now();
   event.locals.logger = baseLogger.child({ requestId: crypto.randomUUID() });
-  // if (!dev && !event.isSubRequest && event.url.pathname.startsWith("/api")) {
-  //   const rateLimitAttempt = await rateLimiter.limit(event.getClientAddress()).catch(() => {
-  //     return { success: true, reset: 69 };
-  //   });
-
-  //   if (!rateLimitAttempt.success) {
-  //     const timeRemaining = Math.floor((rateLimitAttempt.reset - new Date().getTime()) / 1000);
-  //     return new Response(
-  //       JSON.stringify({
-  //         message: `Too many requests. Please try again in ${timeRemaining} seconds.`,
-  //         error: 429,
-  //         status: 429,
-  //       }),
-  //       {
-  //         status: 429,
-  //         headers: {
-  //           "cache-control": `max-age=${timeRemaining * 2}`,
-  //         },
-  //       },
-  //     );
-  //   }
-  // }
-
-  event.locals.validate = async (useApi = true) => {
-    if (event.cookies.getAll().length === 0) return { authenticated: false };
-    if (event.request.headers.get("user-agent")?.toLowerCase().includes("bot"))
-      return { authenticated: false };
-    if (useApi) {
-      const res = await event.fetch("/api/auth").then((r) => r.json());
-      const { user, session } = res;
-
-      if (!user || !session) return { authenticated: false };
-
-      event.locals.authedUser = user;
-      return { user, session, authenticated: true };
+  event.locals.auth = { authenticated: false };
+  const token = getSessionCookie(event.cookies);
+  if (token) {
+    const auth = await validateSession(token);
+    if (auth) {
+      event.locals.auth = { authenticated: true, ...auth };
+      event.locals.authedUser = auth.user;
+      setSessionCookie(event.cookies, token, new Date(auth.session.expiresAt * 1000));
     } else {
-      const sessionId = event.cookies.get(lucia.sessionCookieName);
-      if (!sessionId) {
-        return { authenticated: false };
-      }
-
-      const { session, user } = await lucia.validateSession(sessionId);
-      if (session && session.fresh) {
-        const sessionCookie = lucia.createSessionCookie(session.id);
-        // sveltekit types deviates from the de-facto standard
-        // you can use 'as any' too
-        event.cookies.set(sessionCookie.name, sessionCookie.value, {
-          path: ".",
-          ...sessionCookie.attributes,
-        });
-      }
-      if (!session) {
-        const sessionCookie = lucia.createBlankSessionCookie();
-        event.cookies.set(sessionCookie.name, sessionCookie.value, {
-          path: ".",
-          ...sessionCookie.attributes,
-        });
-      }
-
-      if (!user || !session) {
-        return { authenticated: false };
-      }
-      event.locals.authedUser = user;
-      return { user, session, authenticated: true };
+      deleteSessionCookie(event.cookies);
     }
-  };
+  }
+  event.locals.validate = async () => event.locals.auth;
 
   const res = await resolve(event);
 

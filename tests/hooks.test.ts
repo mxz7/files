@@ -1,14 +1,24 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { RequestEvent } from "@sveltejs/kit";
 
-const { logError, logRequest, logger } = vi.hoisted(() => ({
+const { logError, logRequest, logger, session } = vi.hoisted(() => ({
   logError: vi.fn(),
   logRequest: vi.fn(),
   logger: { bindings: () => ({ requestId: "request-1" }) },
+  session: {
+    getSessionCookie: vi.fn(),
+    validateSession: vi.fn(),
+    setSessionCookie: vi.fn(),
+    deleteSessionCookie: vi.fn(),
+  },
 }));
-vi.mock("#lib/server/lucia.js", () => ({ lucia: {} }));
-vi.mock("#lib/server/logger.js", () => ({ baseLogger: {}, logError, logRequest }));
-import { handleError } from "../src/hooks.server";
+vi.mock("#lib/server/auth/session.js", () => session);
+vi.mock("#lib/server/logger.js", () => ({
+  baseLogger: { child: () => logger },
+  logError,
+  logRequest,
+}));
+import { handle, handleError } from "../src/hooks.server";
 
 function event() {
   return { locals: { logger } } as unknown as RequestEvent;
@@ -53,5 +63,42 @@ describe("error handling", () => {
     expect(JSON.stringify(result)).not.toContain("private internal detail");
     expect(request.locals.errorStackTrace).toBe(error.stack);
     expect(logError).toHaveBeenCalledWith(500, "unknown", request);
+  });
+});
+
+describe("request authentication", () => {
+  beforeEach(() => vi.resetAllMocks());
+
+  it("validates once before rendering and shares public auth through locals", async () => {
+    const auth = {
+      session: { id: "hash", expiresAt: 2000000000 },
+      user: { id: "user", username: "user", admin: false },
+    };
+    session.getSessionCookie.mockReturnValue("token");
+    session.validateSession.mockResolvedValue(auth);
+    const request = { locals: {}, cookies: {} } as unknown as RequestEvent;
+    const resolve = vi.fn(async () => {
+      expect(await request.locals.validate()).toEqual({ authenticated: true, ...auth });
+      expect(await request.locals.validate()).toEqual({ authenticated: true, ...auth });
+      expect(session.setSessionCookie).toHaveBeenCalledWith(
+        request.cookies,
+        "token",
+        new Date(2000000000000),
+      );
+      return new Response("ok");
+    });
+    await handle({ event: request, resolve });
+    expect(session.validateSession).toHaveBeenCalledTimes(1);
+    expect(request.locals.authedUser).toEqual(auth.user);
+  });
+
+  it("clears invalid cookies and renders as unauthenticated", async () => {
+    session.getSessionCookie.mockReturnValue("invalid-token");
+    session.validateSession.mockResolvedValue(null);
+    const request = { locals: {}, cookies: {} } as unknown as RequestEvent;
+    await handle({ event: request, resolve: async () => new Response("ok") });
+    expect(await request.locals.validate()).toEqual({ authenticated: false });
+    expect(session.deleteSessionCookie).toHaveBeenCalledWith(request.cookies);
+    expect(session.setSessionCookie).not.toHaveBeenCalled();
   });
 });

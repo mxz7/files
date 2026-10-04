@@ -15,7 +15,7 @@ const renameSchema = z.object({
 });
 
 export const renameFile = form(renameSchema, async (data) => {
-  const auth = await getRequestEvent().locals.validate(false);
+  const auth = await getRequestEvent().locals.validate();
   if (!auth.authenticated) error(401, "Unauthorized");
   const upload = await db
     .select({ createdBy: uploads.createdByUser })

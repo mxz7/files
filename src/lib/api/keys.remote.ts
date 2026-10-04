@@ -1,32 +1,33 @@
 import { form, getRequestEvent } from "$app/server";
-import db from "#lib/server/database/db.js";
-import { sessions } from "#lib/server/database/schema.js";
-import { lucia } from "#lib/server/lucia.js";
+import {
+  createSession,
+  deleteSessionCookie,
+  generateSessionToken,
+  invalidateUserSessions,
+} from "#lib/server/auth/session.js";
+import { getAuthedUser } from "./auth.remote.js";
 import { error, redirect } from "@sveltejs/kit";
 import dayjs from "dayjs";
-import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 export const createKey = form(z.object({ days: z.number().min(1).max(700) }), async ({ days }) => {
-  const auth = await getRequestEvent().locals.validate(false);
+  const auth = await getRequestEvent().locals.validate();
   if (!auth.authenticated) error(401, "Unauthorized");
 
-  const session = await lucia.createSession(auth.user.id, {});
-  await db
-    .update(sessions)
-    .set({ expiresAt: dayjs().add(days, "day").unix() })
-    .where(eq(sessions.id, session.id));
-
-  return session.id;
+  const token = generateSessionToken();
+  await createSession(token, auth.user.id, dayjs().add(days, "day").toDate());
+  return token;
 });
 
 export const deleteKeys = form(async () => {
   const { locals, cookies } = getRequestEvent();
-  const auth = await locals.validate(false);
+  const auth = await locals.validate();
   if (!auth.authenticated) error(401, "Unauthorized");
 
-  await lucia.invalidateUserSessions(auth.user.id);
-  const cookie = lucia.createBlankSessionCookie();
-  cookies.set(cookie.name, cookie.value, { path: "/", ...cookie.attributes });
+  await invalidateUserSessions(auth.user.id);
+  deleteSessionCookie(cookies);
+  locals.auth = { authenticated: false };
+  locals.authedUser = undefined;
+  getAuthedUser().set(null);
   redirect(303, "/");
 });

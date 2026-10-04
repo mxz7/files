@@ -1,6 +1,5 @@
 <script lang="ts">
   import { login } from "#lib/api/auth.remote.js";
-  import { getLocalAuth } from "#lib/stores.js";
   import { KeyRound, User } from "lucide-svelte";
 </script>
 
@@ -11,14 +10,7 @@
       Or <a href="/signup" class="underline">sign up</a>
     </p>
 
-    <form
-      {...login.enhance(async (form) => {
-        if (await form.submit()) {
-          await getLocalAuth();
-        }
-      })}
-      class="form-control mt-4"
-    >
+    <form {...login} class="form-control mt-4">
       <label
         for="username"
         class="input input-bordered mt-4 flex items-center gap-2 {login.pending

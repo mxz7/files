@@ -1,11 +1,9 @@
-import { lucia } from "#lib/server/lucia.js";
+import { deleteSessionCookie, invalidateSession } from "#lib/server/auth/session.js";
 import { redirect } from "@sveltejs/kit";
 
-export async function GET({ cookies }) {
-  const sessionId = cookies.get(lucia.sessionCookieName);
-
-  if (!sessionId) return redirect(302, "/");
-  await lucia.invalidateSession(sessionId);
-
-  return redirect(302, "/");
+export async function GET({ locals, cookies }) {
+  const auth = await locals.validate();
+  if (auth.authenticated) await invalidateSession(auth.session.id);
+  deleteSessionCookie(cookies);
+  redirect(302, "/");
 }

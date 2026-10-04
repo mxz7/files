@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import { auth } from "#lib/stores.js";
+  import { getAuthedUser, logout } from "#lib/api/auth.remote.js";
+  const user = $derived(await getAuthedUser());
   import { Files, Gift, KeyRound, LogOut, ShieldCheck, Upload, UserSearch } from "lucide-svelte";
 </script>
 
@@ -43,7 +44,7 @@
       </a>
     </li>
 
-    {#if $auth && $auth.authenticated && $auth.user.admin}
+    {#if user?.admin}
       <ul class="ml-2">
         <li>
           <h2 class="-ml-1 font-semibold">
@@ -79,10 +80,12 @@
     {/if}
 
     <li>
-      <a href="/logout" class="flex items-center">
-        <LogOut size={16} strokeWidth={2.5} />
-        <span>log out</span>
-      </a>
+      <form {...logout}>
+        <button class="flex w-full items-center gap-2" disabled={!!logout.pending}>
+          <LogOut size={16} strokeWidth={2.5} />
+          <span>log out</span>
+        </button>
+      </form>
     </li>
   </ul>
 </div>
