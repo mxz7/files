@@ -9,13 +9,12 @@
   import {
     ArrowDownNarrowWide,
     ArrowDownWideNarrow,
-    Copy,
     LoaderCircle,
     Pen,
     Search,
   } from "lucide-svelte";
-  import { toast } from "svelte-sonner";
   import { renameFile, getFiles } from "#lib/api/files.remote.js";
+  import CopyLinkMenu from "./CopyLinkMenu.svelte";
   import DeleteButton from "./DeleteButton.svelte";
 
   const filters = $derived({
@@ -279,16 +278,7 @@
             >
           </td>
           <td class="flex items-center gap-1">
-            <button
-              class="btn btn-ghost tooltip tooltip-top"
-              data-tip="Copy"
-              onclick={() => {
-                navigator.clipboard.writeText(`https://file.maxz.dev/${file.id}`);
-                toast.success("Copied to your clipboard");
-              }}
-            >
-              <Copy size={16} />
-            </button>
+            <CopyLinkMenu id={file.id} />
 
             <button
               class="btn btn-ghost tooltip tooltip-top"

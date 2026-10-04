@@ -40,6 +40,17 @@ when testing). Staging objects use the `_pending/` prefix. Block public access t
 that prefix and configure a one-day lifecycle expiration to remove abandoned
 uploads. Completed and failed uploads are cleaned up by the app.
 
+## Sharing
+
+The file list's copy menu offers a direct file link or a public download-page
+link at `/download/<object-key>`. Download pages show the uploader's username,
+filename, size, actual storage content type, upload date, and expiry. They work
+without signing in and do not expose account IDs, IP addresses, or credentials.
+
+Downloads use signed attachment URLs, refreshed when the download button is
+clicked and limited by the file's remaining lifetime. Expired and missing files
+show an unavailable page. Upload cards continue to use direct file links.
+
 ## Authentication
 
 Authentication follows the session helpers in `~/dev/hrct`, without Lucia.
