@@ -14,6 +14,11 @@ The production origin is `https://files.maxz.dev`, configured with `paths.origin
 in `vite.config.ts`. Development uses the request origin. Adapter-node no longer
 uses the `ORIGIN` environment variable.
 
+Forms use SvelteKit remote functions in `src/lib/api/*.remote.ts`, with Zod
+validation and authorization in each handler. Login and signup also work without
+JavaScript. Sensitive form fields use an underscore prefix to avoid echoing them
+back after failed submissions.
+
 ## Logging
 
 Production requests and errors produce structured Pino logs with a request ID,
@@ -30,6 +35,6 @@ Optionally set `LOKI_TENANT_ID` for Loki's `X-Scope-OrgID` header (for example,
 ## Checks
 
 - `pnpm check` — Svelte and TypeScript checks
-- `pnpm test` — request logging, error handling, and environment validation tests
+- `pnpm test` — logging, environment validation, and remote form authorization tests
 - `pnpm lint` — formatting checks
 - `pnpm build` — production build

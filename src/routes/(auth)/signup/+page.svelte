@@ -1,29 +1,8 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
+  import { signup } from "#lib/api/auth.remote.js";
   import { getLocalAuth } from "#lib/stores.js";
   import { KeyRound, ShieldAlert, User } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import { superForm } from "sveltekit-superforms";
-
-  let { data } = $props();
-
-  const { form, errors, enhance, constraints, message, delayed } = $derived(
-    superForm(data.form, {
-      delayMs: 100,
-      onResult(event) {
-        getLocalAuth();
-      },
-    }),
-  );
-
-  // svelte-ignore state_referenced_locally
-  message.subscribe((value) => {
-    if (value === "ok") {
-      toast.success("Logged in");
-      goto("/files", { refreshAll: true });
-      getLocalAuth();
-    }
-  });
 </script>
 
 <div class="mt-14 flex w-full justify-center">
@@ -33,72 +12,64 @@
       Or <a href="/login" class="underline">log in</a>
     </p>
 
-    <form action="?/signup" method="post" class="form-control mt-4" use:enhance>
+    <form
+      {...signup.enhance(async (form) => {
+        if (await form.submit()) {
+          await getLocalAuth();
+          toast.success("Logged in");
+        }
+      })}
+      class="form-control mt-4"
+    >
       <label
         for="invite"
-        class="input input-bordered input-primary flex items-center gap-2 {$delayed
+        class="input input-bordered input-primary flex items-center gap-2 {signup.pending
           ? 'input-disabled'
           : ''}"
       >
         <ShieldAlert opacity={70} />
-        <input
-          type="text"
-          name="invite"
-          id="invite"
-          placeholder="Invite Token"
-          bind:value={$form.invite}
-          {...$constraints.invite}
-        />
+        <input {...signup.fields._invite.as("text")} id="invite" placeholder="Invite Token" />
       </label>
 
-      {#if Array.isArray($errors.invite)}
-        <span class="text-error mt-1">{$errors.invite[0]}</span>
-      {/if}
+      {#each signup.fields._invite.issues() ?? [] as issue (issue.message)}
+        <span class="text-error mt-1">{issue.message}</span>
+      {/each}
 
       <label
         for="username"
-        class="input input-bordered mt-4 flex items-center gap-2 {$delayed ? 'input-disabled' : ''}"
+        class="input input-bordered mt-4 flex items-center gap-2 {signup.pending
+          ? 'input-disabled'
+          : ''}"
       >
         <User opacity={70} />
-        <input
-          type="text"
-          name="username"
-          id="username"
-          placeholder="Username"
-          bind:value={$form.username}
-          {...$constraints.username}
-        />
+        <input {...signup.fields.username.as("text")} id="username" placeholder="Username" />
       </label>
 
-      {#if Array.isArray($errors.username)}
-        <span class="text-error mt-1">{$errors.username[0]}</span>
-      {/if}
+      {#each signup.fields.username.issues() ?? [] as issue (issue.message)}
+        <span class="text-error mt-1">{issue.message}</span>
+      {/each}
 
       <label
         for="password"
-        class="input input-bordered mt-4 flex items-center gap-2 {$delayed ? 'input-disabled' : ''}"
+        class="input input-bordered mt-4 flex items-center gap-2 {signup.pending
+          ? 'input-disabled'
+          : ''}"
       >
         <KeyRound opacity={70} />
-        <input
-          type="password"
-          name="password"
-          id="password"
-          placeholder="Password"
-          bind:value={$form.password}
-          {...$constraints.password}
-        />
+        <input {...signup.fields._password.as("password")} id="password" placeholder="Password" />
       </label>
 
-      {#if Array.isArray($errors.password)}
-        <span class="text-error mt-1">{$errors.password[0]}</span>
-      {/if}
+      {#each signup.fields._password.issues() ?? [] as issue (issue.message)}
+        <span class="text-error mt-1">{issue.message}</span>
+      {/each}
 
       <button
-        class="btn btn-primary mt-4 flex items-center gap-2 text-lg {$delayed
+        disabled={!!signup.pending}
+        class="btn btn-primary mt-4 flex items-center gap-2 text-lg {signup.pending
           ? 'btn-disabled'
           : ''}"
       >
-        {#if $delayed}
+        {#if signup.pending}
           <span class="loading loading-spinner"></span>
         {/if}
         <span>Sign up</span>

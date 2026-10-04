@@ -1,20 +1,8 @@
-import { S3_BUCKET } from "$app/env/private";
 import db from "#lib/server/database/db.js";
 import { uploads } from "#lib/server/database/schema.js";
-import { s3 } from "#lib/server/s3.js";
-import { CopyObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { redirect } from "@sveltejs/kit";
 import { SQL, and, asc, count, desc, eq, like, or, sql, type SQLWrapper } from "drizzle-orm";
 import type { SQLiteColumn } from "drizzle-orm/sqlite-core";
-import { fail, message, superValidate } from "sveltekit-superforms";
-import { zod4 as zod } from "sveltekit-superforms/adapters";
-import { z } from "zod";
-
-const renameSchema = z.object({
-  id: z.string(),
-  label: z.string().min(1).max(100).trim(),
-  includeLabelInUrl: z.boolean().default(false),
-});
 
 export async function load({ locals, url, depends }) {
   depends("file_uploads");
@@ -115,73 +103,8 @@ export async function load({ locals, url, depends }) {
   return {
     files,
     user: auth.user,
-    form: await superValidate(zod(renameSchema)),
     page,
     lastPage: Math.ceil(fileCount.count / 25),
     orderDisplay,
   };
 }
-
-export const actions = {
-  rename: async ({ locals, request }) => {
-    const auth = await locals.validate();
-
-    if (!auth.authenticated) return fail(400);
-
-    const form = await superValidate(request, zod(renameSchema));
-
-    if (!form.valid) return fail(400, { form });
-
-    const upload = await db
-      .select({ createdBy: uploads.createdByUser })
-      .from(uploads)
-      .where(eq(uploads.id, form.data.id))
-      .limit(1)
-      .then((r) => r[0]);
-
-    if (!upload) return fail(404, { form });
-
-    if (upload.createdBy !== auth.user.id) return fail(403, { form });
-
-    let id = form.data.id;
-    if (form.data.includeLabelInUrl) {
-      let original = form.data.id;
-
-      if (original.includes("/")) {
-        original = original.substring(original.lastIndexOf("/") + 1);
-      }
-
-      id =
-        encodeURIComponent(
-          form.data.label
-            .substring(0, 20)
-            .toLowerCase()
-            .trim()
-            .replaceAll(" ", "-")
-            .replaceAll("/", "-"),
-        ) + `/${original}`;
-    }
-
-    await db
-      .update(uploads)
-      .set({
-        label: form.data.label,
-        id,
-      })
-      .where(eq(uploads.id, form.data.id));
-
-    if (id !== form.data.id) {
-      await s3.send(
-        new CopyObjectCommand({
-          Bucket: S3_BUCKET,
-          CopySource: `${S3_BUCKET}/${form.data.id}`,
-          Key: id,
-        }),
-      );
-
-      await s3.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: form.data.id }));
-    }
-
-    return message(form, "success");
-  },
-};

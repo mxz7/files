@@ -14,23 +14,12 @@
     Search,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import { superForm } from "sveltekit-superforms";
+  import { renameFile } from "#lib/api/files.remote.js";
   import DeleteButton from "./DeleteButton.svelte";
 
   let { data } = $props();
 
   let renameModal: HTMLDialogElement;
-
-  const { form, enhance, errors, constraints, delayed } = $derived(
-    superForm(data.form, {
-      delayMs: 50,
-      onResult(event) {
-        renameModal.close();
-        invalidate("file_uploads");
-      },
-      invalidateAll: false,
-    }),
-  );
 
   function updateSearch(value: string) {
     const params = new URL(page.url.href).searchParams;
@@ -50,44 +39,46 @@
 
 <dialog class="modal" bind:this={renameModal}>
   <div class="modal-box">
-    <h3 class="text-lg font-bold">Rename {$form.label || $form.id}</h3>
-    <form action="?/rename" method="POST" class="mt-2 flex flex-col gap-4" use:enhance>
+    <h3 class="text-lg font-bold">
+      Rename {renameFile.fields.label.value() || renameFile.fields.id.value()}
+    </h3>
+    <form
+      {...renameFile.enhance(async (form) => {
+        if (await form.submit().updates()) {
+          renameModal.close();
+          await invalidate("file_uploads");
+        }
+      })}
+      class="mt-2 flex flex-col gap-4"
+    >
       <input
-        type="text"
-        name="id"
+        {...renameFile.fields.id.as("hidden", renameFile.fields.id.value() ?? "")}
         id="id"
         class="hidden"
-        bind:value={$form.id}
-        {...$constraints.id}
       />
-      {#if $errors.id}
-        <p class="text-error">{$errors.id}</p>
-      {/if}
+      {#each renameFile.fields.id.issues() ?? [] as issue (issue.message)}
+        <p class="text-error">{issue.message}</p>
+      {/each}
       <input
-        type="text"
-        name="label"
+        {...renameFile.fields.label.as("text")}
         id="label"
         class="input input-bordered input-primary w-full"
-        bind:value={$form.label}
-        {...$constraints.label}
       />
-      {#if $errors.label}
-        <p class="text-error">{$errors.label}</p>
-      {/if}
+      {#each renameFile.fields.label.issues() ?? [] as issue (issue.message)}
+        <p class="text-error">{issue.message}</p>
+      {/each}
 
       <label for="includeLabelInUrl" class="flex items-center gap-2">
         <input
-          type="checkbox"
+          {...renameFile.fields.includeLabelInUrl.as("checkbox")}
           class="checkbox checkbox-sm checkbox-primary"
-          name="includeLabelInUrl"
           id="includeLabelInUrl"
-          bind:checked={$form.includeLabelInUrl}
         />
         Include label in URL
       </label>
 
-      <button class="btn btn-primary {$delayed ? 'btn-disabled' : ''}">
-        {#if $delayed}
+      <button class="btn btn-primary" disabled={!!renameFile.pending}>
+        {#if renameFile.pending}
           <span class="animate-spin"><LoaderCircle /></span>
         {:else}
           Submit
@@ -298,9 +289,9 @@
               class="btn btn-ghost tooltip tooltip-top"
               data-tip="rename"
               onclick={() => {
-                $form.id = file.id;
-                $form.label = file.label ?? "";
-                $form.includeLabelInUrl = file.id.includes("/");
+                renameFile.fields.id.set(file.id);
+                renameFile.fields.label.set(file.label ?? "");
+                renameFile.fields.includeLabelInUrl.set(file.id.includes("/"));
 
                 renameModal.showModal();
               }}
