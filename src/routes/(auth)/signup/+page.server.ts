@@ -1,8 +1,8 @@
-import { nanoid } from "$lib/nanoid.js";
-import { signupSchema } from "$lib/schema/auth.js";
-import db from "$lib/server/database/db.js";
-import { invites, users } from "$lib/server/database/schema.js";
-import { lucia } from "$lib/server/lucia.js";
+import { nanoid } from "#lib/nanoid.js";
+import { signupSchema } from "#lib/schema/auth.js";
+import db from "#lib/server/database/db.js";
+import { invites, users } from "#lib/server/database/schema.js";
+import { lucia } from "#lib/server/lucia.js";
 import { hash } from "@node-rs/argon2";
 import { fail, redirect } from "@sveltejs/kit";
 import { and, eq, isNull } from "drizzle-orm";

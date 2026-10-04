@@ -1,14 +1,14 @@
-import { env } from "$env/dynamic/private";
-import db from "$lib/server/database/db.js";
-import { sessions, uploads } from "$lib/server/database/schema.js";
-import { s3 } from "$lib/server/s3.js";
+import { CRON_SECRET } from "$app/env/private";
+import db from "#lib/server/database/db.js";
+import { sessions, uploads } from "#lib/server/database/schema.js";
+import { s3 } from "#lib/server/s3.js";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { error, json } from "@sveltejs/kit";
 import dayjs from "dayjs";
 import { eq, lte } from "drizzle-orm";
 
 export async function GET({ request }) {
-  if (request.headers.get("Authorization") !== `Bearer ${env.CRON_SECRET}`) return error(401);
+  if (request.headers.get("Authorization") !== `Bearer ${CRON_SECRET}`) return error(401);
 
   const expired = await db
     .select({ id: uploads.id })

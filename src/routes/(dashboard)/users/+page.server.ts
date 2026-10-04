@@ -1,5 +1,5 @@
-import db from "$lib/server/database/db.js";
-import { uploads, users } from "$lib/server/database/schema.js";
+import db from "#lib/server/database/db.js";
+import { uploads, users } from "#lib/server/database/schema.js";
 import { redirect } from "@sveltejs/kit";
 import { count, eq, sum } from "drizzle-orm";
 

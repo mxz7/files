@@ -1,4 +1,4 @@
-import { lucia } from "$lib/server/lucia";
+import { lucia } from "#lib/server/lucia.js";
 
 export const handle = async ({ event, resolve }) => {
   // if (!dev && !event.isSubRequest && event.url.pathname.startsWith("/api")) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getLocalAuth } from "$lib/stores.js";
+  import { getLocalAuth } from "#lib/stores.js";
   import { KeyRound, User } from "lucide-svelte";
   import { superForm } from "sveltekit-superforms";
 

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Pages from "$lib/components/Pages.svelte";
-  import { formatBytes } from "$lib/format.js";
+  import Pages from "#lib/components/Pages.svelte";
+  import { formatBytes } from "#lib/format.js";
   import dayjs from "dayjs";
 
   let { data } = $props();

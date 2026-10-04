@@ -1,4 +1,4 @@
-import { lucia } from "$lib/server/lucia.js";
+import { lucia } from "#lib/server/lucia.js";
 import { redirect } from "@sveltejs/kit";
 
 export async function GET({ cookies }) {

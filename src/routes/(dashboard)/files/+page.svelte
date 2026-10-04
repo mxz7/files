@@ -1,9 +1,9 @@
 <script lang="ts">
   import { goto, invalidate } from "$app/navigation";
-  import { page } from "$app/stores";
-  import Pages from "$lib/components/Pages.svelte";
-  import { formatBytes } from "$lib/format.js";
-  import { debounce } from "$lib/utils";
+  import { page } from "$app/state";
+  import Pages from "#lib/components/Pages.svelte";
+  import { formatBytes } from "#lib/format.js";
+  import { debounce } from "#lib/utils.js";
   import dayjs from "dayjs";
   import {
     ArrowDownNarrowWide,
@@ -33,7 +33,7 @@
   );
 
   function updateSearch(value: string) {
-    const params = new URLSearchParams($page.url.searchParams);
+    const params = new URLSearchParams(page.url.searchParams);
 
     if (value) params.set("search", value);
     else params.delete("search");
@@ -123,7 +123,7 @@
           <button
             class="flex items-center gap-2"
             onclick={() => {
-              const params = new URLSearchParams($page.url.searchParams);
+              const params = new URLSearchParams(page.url.searchParams);
 
               if (data.orderDisplay.column === "label") {
                 if (data.orderDisplay.direction === "asc") {
@@ -152,7 +152,7 @@
           <button
             class="flex items-center gap-2"
             onclick={() => {
-              const params = new URLSearchParams($page.url.searchParams);
+              const params = new URLSearchParams(page.url.searchParams);
 
               if (data.orderDisplay.column === "size") {
                 if (data.orderDisplay.direction === "asc") {
@@ -181,7 +181,7 @@
           <button
             class="flex items-center gap-2"
             onclick={() => {
-              const params = new URLSearchParams($page.url.searchParams);
+              const params = new URLSearchParams(page.url.searchParams);
 
               if (data.orderDisplay.column === "date") {
                 if (data.orderDisplay.direction === "asc") {
@@ -210,7 +210,7 @@
           <button
             class="flex items-center gap-2"
             onclick={() => {
-              const params = new URLSearchParams($page.url.searchParams);
+              const params = new URLSearchParams(page.url.searchParams);
 
               if (data.orderDisplay.column === "expire") {
                 if (data.orderDisplay.direction === "asc") {

@@ -1,7 +1,7 @@
-import { loginSchema } from "$lib/schema/auth.js";
-import db from "$lib/server/database/db.js";
-import { users } from "$lib/server/database/schema.js";
-import { lucia } from "$lib/server/lucia.js";
+import { loginSchema } from "#lib/schema/auth.js";
+import db from "#lib/server/database/db.js";
+import { users } from "#lib/server/database/schema.js";
+import { lucia } from "#lib/server/lucia.js";
 import { verify } from "@node-rs/argon2";
 import { fail, redirect } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";

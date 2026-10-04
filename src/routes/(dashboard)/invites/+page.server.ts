@@ -1,6 +1,6 @@
-import { nanoid } from "$lib/nanoid.js";
-import db from "$lib/server/database/db.js";
-import { invites, users } from "$lib/server/database/schema.js";
+import { nanoid } from "#lib/nanoid.js";
+import db from "#lib/server/database/db.js";
+import { invites, users } from "#lib/server/database/schema.js";
 import { fail, redirect } from "@sveltejs/kit";
 import { desc, eq } from "drizzle-orm";
 

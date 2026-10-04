@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { getLocalAuth } from "$lib/stores";
+  import { getLocalAuth } from "#lib/stores.js";
   import { KeyRound, ShieldAlert, User } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { superForm } from "sveltekit-superforms";

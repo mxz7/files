@@ -1,6 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import type { Authed, Unauthed } from "$lib/types/auth";
+import type { Authed, Unauthed } from "#lib/types/auth.js";
 
 // for information about these interfaces
 declare global {

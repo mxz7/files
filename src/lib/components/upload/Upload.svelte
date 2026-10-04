@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { browser } from "$app/environment";
-  import { auth } from "$lib/stores";
-  import type { FileData } from "$lib/types/file";
+  import { browser } from "$app/env";
+  import { auth } from "#lib/stores.js";
+  import type { FileData } from "#lib/types/file.js";
   import { CloudUpload, Copy } from "lucide-svelte";
   import { nanoid } from "nanoid/non-secure";
   import { onDestroy, onMount } from "svelte";

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { formatBytes } from "$lib/format";
-  import type { FileData } from "$lib/types/file";
+  import { formatBytes } from "#lib/format.js";
+  import type { FileData } from "#lib/types/file.js";
   import { Check, CircleX, Copy } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { fly } from "svelte/transition";

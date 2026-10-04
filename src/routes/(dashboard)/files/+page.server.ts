@@ -1,7 +1,7 @@
-import { env } from "$env/dynamic/private";
-import db from "$lib/server/database/db.js";
-import { uploads } from "$lib/server/database/schema.js";
-import { s3 } from "$lib/server/s3.js";
+import { S3_BUCKET } from "$app/env/private";
+import db from "#lib/server/database/db.js";
+import { uploads } from "#lib/server/database/schema.js";
+import { s3 } from "#lib/server/s3.js";
 import { CopyObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { redirect } from "@sveltejs/kit";
 import { SQL, and, asc, count, desc, eq, like, or, sql, type SQLWrapper } from "drizzle-orm";
@@ -173,13 +173,13 @@ export const actions = {
     if (id !== form.data.id) {
       await s3.send(
         new CopyObjectCommand({
-          Bucket: env.S3_BUCKET,
-          CopySource: `${env.S3_BUCKET}/${form.data.id}`,
+          Bucket: S3_BUCKET,
+          CopySource: `${S3_BUCKET}/${form.data.id}`,
           Key: id,
         }),
       );
 
-      await s3.send(new DeleteObjectCommand({ Bucket: env.S3_BUCKET, Key: form.data.id }));
+      await s3.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: form.data.id }));
     }
 
     return message(form, "success");

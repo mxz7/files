@@ -1,6 +1,6 @@
-import db from "$lib/server/database/db";
-import { sessions as sessionTable } from "$lib/server/database/schema.js";
-import { lucia } from "$lib/server/lucia.js";
+import db from "#lib/server/database/db.js";
+import { sessions as sessionTable } from "#lib/server/database/schema.js";
+import { lucia } from "#lib/server/lucia.js";
 import { redirect } from "@sveltejs/kit";
 import dayjs from "dayjs";
 import { asc, eq } from "drizzle-orm";

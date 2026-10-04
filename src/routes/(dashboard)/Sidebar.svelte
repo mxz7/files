@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { page } from "$app/stores";
-  import { auth } from "$lib/stores";
+  import { page } from "$app/state";
+  import { auth } from "#lib/stores.js";
   import { Files, Gift, KeyRound, LogOut, ShieldCheck, Upload, UserSearch } from "lucide-svelte";
 </script>
 
@@ -10,7 +10,7 @@
     <li>
       <a
         href="/files"
-        class="{$page.url.pathname === '/files'
+        class="{page.url.pathname === '/files'
           ? 'text-primary font-semibold'
           : ''} flex items-center"
       >
@@ -22,7 +22,7 @@
     <li>
       <a
         href="/upload"
-        class="{$page.url.pathname === '/upload'
+        class="{page.url.pathname === '/upload'
           ? 'text-primary font-semibold'
           : ''} flex items-center"
       >
@@ -34,7 +34,7 @@
     <li>
       <a
         href="/keys"
-        class="{$page.url.pathname === '/keys'
+        class="{page.url.pathname === '/keys'
           ? 'text-primary font-semibold'
           : ''} flex items-center"
       >
@@ -55,7 +55,7 @@
         <li>
           <a
             href="/invites"
-            class="{$page.url.pathname.startsWith('/invites')
+            class="{page.url.pathname.startsWith('/invites')
               ? 'text-primary font-semibold'
               : ''} flex items-center"
           >
@@ -67,7 +67,7 @@
         <li>
           <a
             href="/users"
-            class="{$page.url.pathname.startsWith('/users')
+            class="{page.url.pathname.startsWith('/users')
               ? 'text-primary font-semibold'
               : ''} flex items-center"
           >
