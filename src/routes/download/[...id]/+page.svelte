@@ -1,15 +1,19 @@
 <script lang="ts">
-  import { page } from "$app/state";
   import { getDownloadFile } from "#lib/api/downloads.remote.js";
-  import { downloadPagePath } from "#lib/download.js";
   import { formatBytes } from "#lib/format.js";
+  import { page } from "$app/state";
   import {
-    Copy,
     Download,
     File,
     FileArchive,
     FileAudio,
     FileImage,
+    FileCode,
+    FileSpreadsheet,
+    FileType,
+    FileCog,
+    Presentation,
+    BookOpen,
     FileText,
     FileVideo,
   } from "lucide-svelte";
@@ -19,19 +23,51 @@
   const file = $derived(await getDownloadFile(id));
   const extension = $derived(file.name.split(".").at(-1)?.toUpperCase() ?? "FILE");
 
-  const FileIcon = $derived(
-    file.contentType.startsWith("image/")
-      ? FileImage
-      : file.contentType.startsWith("video/")
-        ? FileVideo
-        : file.contentType.startsWith("audio/")
-          ? FileAudio
-          : file.contentType.startsWith("text/") || file.contentType === "application/pdf"
-            ? FileText
-            : /zip|compressed|tar|rar/.test(file.contentType)
-              ? FileArchive
-              : File,
-  );
+  const FileIcon = $derived.by(() => {
+    const type = file.contentType.toLowerCase();
+    const ext = extension.toLowerCase();
+
+    if (
+      type.startsWith("image/") ||
+      /^(jpe?g|png|gif|webp|avif|svg|bmp|tiff?|heic|ico)$/.test(ext)
+    ) {
+      return FileImage;
+    }
+    if (type.startsWith("video/") || /^(mp4|webm|mov|mkv|avi|m4v)$/.test(ext)) return FileVideo;
+    if (type.startsWith("audio/") || /^(mp3|wav|flac|ogg|m4a|aac|opus)$/.test(ext))
+      return FileAudio;
+
+    if (/zip|compressed|tar|rar|7z/.test(type) || /^(zip|rar|7z|tar|gz|bz2|xz)$/.test(ext)) {
+      return FileArchive;
+    }
+
+    if (/spreadsheet|excel|csv/.test(type) || /^(xlsx?|ods|csv|tsv)$/.test(ext)) {
+      return FileSpreadsheet;
+    }
+
+    if (/presentation|powerpoint/.test(type) || /^(pptx?|odp)$/.test(ext)) {
+      return Presentation;
+    }
+
+    if (/epub|ebook/.test(type) || /^(epub|mobi)$/.test(ext)) return BookOpen;
+    if (type.startsWith("font/") || /^(woff2?|ttf|otf)$/.test(ext)) return FileType;
+
+    if (
+      /json|javascript|xml/.test(type) ||
+      /^(html?|css|js|ts|jsx|tsx|json|xml|py|rs|go|sh|sql|svelte)$/.test(ext)
+    ) {
+      return FileCode;
+    }
+
+    if (/pdf|word|document|rtf/.test(type) || /^(pdf|docx?|odt|rtf|txt|md)$/.test(ext)) {
+      return FileText;
+    }
+
+    if (/^(exe|msi|dmg|apk|deb|rpm|appimage)$/.test(ext)) return FileCog;
+    if (type.startsWith("text/")) return FileText;
+
+    return File;
+  });
 
   let downloading = $state(false);
 
@@ -43,16 +79,6 @@
         timeZone: "UTC",
       }).format(date) + " UTC"
     );
-  }
-
-  async function copyLink() {
-    try {
-      await navigator.clipboard.writeText(`${page.url.origin}${downloadPagePath(id)}`);
-
-      toast.success("Download page link copied");
-    } catch {
-      toast.error("Couldn't copy the link");
-    }
   }
 
   async function download(event: MouseEvent) {
@@ -164,17 +190,10 @@
         </div>
 
         <div>
-          <dt class="text-base-content/60 text-sm">Download filename</dt>
+          <dt class="text-base-content/60 text-sm">File name</dt>
           <dd class="mt-1 font-medium [overflow-wrap:anywhere]">{file.name}</dd>
         </div>
       </dl>
-
-      <div class="border-base-content/10 flex justify-center border-t pt-4">
-        <button onclick={copyLink} class="btn btn-ghost btn-sm">
-          <Copy size={16} />
-          Copy share link
-        </button>
-      </div>
     </div>
   </section>
 </main>
