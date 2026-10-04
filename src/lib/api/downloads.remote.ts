@@ -1,14 +1,14 @@
-import { query } from "$app/server";
-import { S3_BUCKET } from "$app/env/private";
-import { error } from "@sveltejs/kit";
-import { GetObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { eq } from "drizzle-orm";
-import { z } from "zod";
+import { attachmentDisposition, downloadFileName } from "#lib/download.js";
 import db from "#lib/server/database/db.js";
 import { uploads, users } from "#lib/server/database/schema.js";
 import { s3 } from "#lib/server/s3.js";
-import { attachmentDisposition, downloadFileName } from "#lib/download.js";
+import { S3_BUCKET } from "$app/env/private";
+import { query } from "$app/server";
+import { GetObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { error } from "@sveltejs/kit";
+import { eq } from "drizzle-orm";
+import { z } from "zod";
 
 export const getDownloadFile = query(z.string().min(1).max(1024), async (id) => {
   const [file] = await db
@@ -24,7 +24,7 @@ export const getDownloadFile = query(z.string().min(1).max(1024), async (id) => 
     .where(eq(uploads.id, id))
     .limit(1);
 
-  if (!file || file.bytes === null) error(404, "This file is no longer available.");
+  if (!file || file.bytes === null) error(404, "This file is not available.");
 
   const remainingSeconds = Math.floor((file.expiresAt.getTime() - Date.now()) / 1000);
 
@@ -38,7 +38,7 @@ export const getDownloadFile = query(z.string().min(1).max(1024), async (id) => 
     if (cause && typeof cause === "object" && "$metadata" in cause) {
       const status = (cause.$metadata as { httpStatusCode?: number }).httpStatusCode;
 
-      if (status === 404) error(404, "This file is no longer available.");
+      if (status === 404) error(404, "This file is not available.");
     }
 
     throw cause;
