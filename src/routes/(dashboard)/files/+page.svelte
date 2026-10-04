@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { goto, invalidate } from "$app/navigation";
+  import { goto } from "$app/navigation";
   import { page } from "$app/state";
+  import { parsePage } from "#lib/pagination.js";
   import Pages from "#lib/components/Pages.svelte";
   import { formatBytes } from "#lib/format.js";
   import { debounce } from "#lib/utils.js";
@@ -14,10 +15,15 @@
     Search,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import { renameFile } from "#lib/api/files.remote.js";
+  import { renameFile, getFiles } from "#lib/api/files.remote.js";
   import DeleteButton from "./DeleteButton.svelte";
 
-  let { data } = $props();
+  const filters = $derived({
+    page: parsePage(page.url.searchParams.get("page")),
+    search: (page.url.searchParams.get("search") ?? "").slice(0, 200),
+    order: (page.url.searchParams.get("order") ?? "datede").slice(0, 20),
+  });
+  const data = $derived(await getFiles(filters));
 
   let renameModal: HTMLDialogElement;
 
@@ -44,9 +50,8 @@
     </h3>
     <form
       {...renameFile.enhance(async (form) => {
-        if (await form.submit().updates()) {
+        if (await form.submit().updates(getFiles(filters))) {
           renameModal.close();
-          await invalidate("file_uploads");
         }
       })}
       class="mt-2 flex flex-col gap-4"
@@ -230,7 +235,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each data.files as file}
+      {#each data.files as file (file.id)}
         <tr>
           <td class="w-fit">
             <div class="flex w-full max-w-80 items-center gap-3">
@@ -299,7 +304,7 @@
               <Pen size={16} strokeWidth={2.5} />
             </button>
 
-            <DeleteButton id={file.id} />
+            <DeleteButton id={file.id} onDeleted={() => getFiles(filters).refresh()} />
           </td>
         </tr>
       {/each}

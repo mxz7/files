@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { createInvite } from "#lib/api/invites.remote.js";
-  import { invalidate } from "$app/navigation";
+  import { createInvite, getInvites } from "#lib/api/invites.remote.js";
   import dayjs from "dayjs";
   import { Copy } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import DeleteButton from "./DeleteButton.svelte";
 
-  let { data } = $props();
+  const data = $derived(await getInvites());
 
   let modal: HTMLDialogElement;
 
@@ -27,10 +26,9 @@
 
     <form
       {...createInvite.enhance(async (form) => {
-        if (await form.submit().updates()) {
+        if (await form.submit().updates(getInvites())) {
           modal.close();
           form.element.reset();
-          await invalidate("invites");
         }
       })}
       class="form-control mt-4 gap-3"
@@ -66,7 +64,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each data.invites as invite}
+      {#each data.invites as invite (invite.id)}
         <tr>
           <td>{invite.label}</td>
           <td>{dayjs(invite.createdAt).format("YYYY-MM-DD")}</td>

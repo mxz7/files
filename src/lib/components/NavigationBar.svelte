@@ -1,15 +1,16 @@
 <script>
-  import { dashboard } from "#lib/stores.js";
+  import { page } from "$app/state";
   import { getAuthedUser } from "#lib/api/auth.remote.js";
   import { AlignLeft, CircleUser } from "lucide-svelte";
 
+  const dashboard = $derived(page.route.id?.startsWith("/(dashboard)") ?? false);
   const user = $derived(await getAuthedUser());
 </script>
 
 <header class="flex w-full justify-center">
   <div class="navbar bg-base-200 lg:mt-3 lg:max-w-6xl lg:rounded-xl">
     <div class="flex-1">
-      {#if $dashboard}
+      {#if dashboard}
         <label for="my-drawer" class="btn btn-ghost drawer-button text-primary lg:hidden">
           <AlignLeft strokeWidth={2.5} />
         </label>

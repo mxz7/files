@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { requireGuest } from "#lib/api/auth.remote.js";
   import { login } from "#lib/api/auth.remote.js";
   import { KeyRound, User } from "lucide-svelte";
+  await requireGuest();
 </script>
 
 <div class="mt-14 flex w-full justify-center">

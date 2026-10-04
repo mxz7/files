@@ -111,10 +111,23 @@ export const getAuthedUser = query(async () => {
 export const logout = form(async () => {
   const { locals, cookies } = getRequestEvent();
   const auth = await locals.validate();
+
   if (auth.authenticated) await invalidateSession(auth.session.id);
   deleteSessionCookie(cookies);
   locals.auth = { authenticated: false };
   locals.authedUser = undefined;
   getAuthedUser().set(null);
   redirect(303, "/");
+});
+
+export const requireAuth = query(async () => {
+  const user = await getAuthedUser();
+  if (!user) redirect(303, "/login");
+
+  return user;
+});
+
+export const requireGuest = query(async () => {
+  if (await getAuthedUser()) redirect(303, "/files");
+  return null;
 });

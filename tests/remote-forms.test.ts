@@ -32,10 +32,20 @@ vi.mock("$app/server", () => ({
   // Exercise handler logic without invoking SvelteKit's request dispatcher.
   form: (schemaOrHandler: object, handler?: object) =>
     Object.assign(handler ?? schemaOrHandler, { __: { type: "form" } }),
-  query: (handler: () => unknown) =>
-    Object.assign(() => Object.assign(Promise.resolve(handler()), { set: vi.fn() }), {
-      __: { type: "query" },
-    }),
+  command: (schemaOrHandler: object, handler?: object) =>
+    Object.assign(handler ?? schemaOrHandler, { __: { type: "command" } }),
+  query: (schemaOrHandler: unknown, handler?: (...args: unknown[]) => unknown) =>
+    Object.assign(
+      (...args: unknown[]) =>
+        Object.assign(
+          Promise.resolve(
+            (handler ?? (schemaOrHandler as (...args: unknown[]) => unknown))(...args),
+          ),
+          { set: vi.fn(), refresh: vi.fn() },
+        ),
+      { __: { type: "query" } },
+    ),
+  requested: () => ({ refreshAll: vi.fn() }),
   getRequestEvent: () => ({ locals: { validate: mocks.validate }, cookies: mocks.cookies }),
 }));
 vi.mock("$app/env/private", () => ({ S3_BUCKET: "test" }));
@@ -45,8 +55,8 @@ vi.mock("#lib/server/s3.js", () => ({ s3: { send: mocks.send } }));
 vi.mock("@node-rs/argon2", () => ({ hash: mocks.hash, verify: mocks.verify }));
 
 import { login, signup } from "#lib/api/auth.remote.js";
-import { renameFile } from "#lib/api/files.remote.js";
-import { createInvite } from "#lib/api/invites.remote.js";
+import { renameFile, deleteFile } from "#lib/api/files.remote.js";
+import { createInvite, deleteInvite } from "#lib/api/invites.remote.js";
 import { createKey, deleteKeys } from "#lib/api/keys.remote.js";
 
 function run(remote: unknown, data?: unknown) {
@@ -79,6 +89,8 @@ beforeEach(() => {
 describe("remote mutation authorization", () => {
   it.each([
     ["rename", renameFile, { id: "file.txt", label: "Renamed", includeLabelInUrl: false }],
+    ["delete file", deleteFile, "file.txt"],
+    ["delete invite", deleteInvite, "invite"],
     ["create key", createKey, { days: 7 }],
     ["delete keys", deleteKeys, undefined],
     ["create invite", createInvite, { label: "Invite" }],

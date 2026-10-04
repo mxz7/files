@@ -1,8 +1,8 @@
 <script lang="ts">
   import dayjs from "dayjs";
-  import { createKey, deleteKeys } from "#lib/api/keys.remote.js";
+  import { createKey, deleteKeys, getKeys } from "#lib/api/keys.remote.js";
 
-  let { data } = $props();
+  const data = $derived(await getKeys());
 
   let createModal: HTMLDialogElement;
 </script>
@@ -16,7 +16,7 @@
     <h3 class="text-lg font-bold">create session key</h3>
     <form
       {...createKey.enhance(async (form) => {
-        if (await form.submit()) {
+        if (await form.submit().updates(getKeys())) {
           createModal.close();
         }
       })}
@@ -65,7 +65,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each data.sessions as session}
+      {#each data.sessions as session, i (i)}
         <tr>
           <td>{session.current ? "yes" : "no"}</td>
           <td>{dayjs(session.expiresAt * 1000).format("YYYY-MM-DD HH:mm:ss")}</td>
