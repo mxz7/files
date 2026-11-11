@@ -76,8 +76,8 @@ importers:
         specifier: ^0.28.2
         version: 0.28.2
       lucide-svelte:
-        specifier: ^0.542.0
-        version: 0.542.0(svelte@5.57.3)
+        specifier: ^1.0.1
+        version: 1.0.1(svelte@5.57.3)
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
@@ -1917,8 +1917,8 @@ packages:
   locate-character@3.0.0:
     resolution: {integrity: sha512-SW13ws7BjaeJ6p7Q6CO2nchbYEc3X3J6WrmTTDto7yMPqVSZTUyY5Tjbid+Ab8gLnATtygYtiDIJGQRRn2ZOiA==}
 
-  lucide-svelte@0.542.0:
-    resolution: {integrity: sha512-KxqJycY4EWaGy1zk/7sqEcf48j4YaP9zEujYczzrsw5j9b9b5pjAJ1qGFKZvD7T6xz9reSYAfUAd6Bz62TdqGw==}
+  lucide-svelte@1.0.1:
+    resolution: {integrity: sha512-WvzZgk0pqzgda+AErLvgWxHkfg/+GgUwqKMRHvzt0IqyMdmyEDzDCk3Z+Wo/3y753oIgx8u9Q4eUbWkghFa8Jg==}
     deprecated: Package deprecated. Please use @lucide/svelte instead.
     peerDependencies:
       svelte: ^3 || ^4 || ^5.0.0-next.42
@@ -4051,7 +4051,7 @@ snapshots:
 
   locate-character@3.0.0: {}
 
-  lucide-svelte@0.542.0(svelte@5.57.3):
+  lucide-svelte@1.0.1(svelte@5.57.3):
     dependencies:
       svelte: 5.57.3
 
