@@ -44,7 +44,7 @@
     "dayjs": "^1.11.23",
     "drizzle-kit": "^0.31.11",
     "drizzle-orm": "^0.45.4",
-    "exiftool-vendored": "^30.5.0",
+    "exiftool-vendored": "^39.2.0",
     "nanoid": "^5.1.16",
     "pino": "^10.4.0",
     "pino-loki": "^3.0.0",
